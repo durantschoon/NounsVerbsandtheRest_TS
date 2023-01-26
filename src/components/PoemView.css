@@ -1,0 +1,64 @@
+:root {
+    --hmargin: 20px;
+}
+
+textarea {
+    height: 24rem;
+}
+
+#text-output {
+    border: 1px solid #000;
+}
+
+textarea, #text-output, #stats-fieldset, legend {
+    min-width: 400px;
+    padding: 4px;
+    margin-left: var(--hmargin);
+    width: calc(100% - 2 * var(--hmargin));
+    background-color: floralwhite;
+}
+
+textarea, #text-output {
+    font-family: 'Xanh Mono', monospace;
+    font-size: 1.2rem;
+    border: 2px solid #000;
+    border-radius: 6px;
+    
+    box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
+    -webkit-box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
+    -moz-box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
+}
+
+#stats-fieldset {
+    margin-top: 0.5rem;
+}
+
+#stats-legend {
+    max-width: 5rem;
+    border: 1px solid lightgray;
+}
+
+.noun {
+    border: 1px solid orange;
+    padding: 1px 3px;
+    background-color: lightyellow;
+    cursor: alias;
+}
+
+#noun-cursor-img {
+    content: url("../images/cursor_back.png");
+    width: 20px;
+}
+
+#non-noun-cursor-img {
+    content: url("../images/cursor_plus.png");
+    width: 20px;
+}
+
+.non-noun {
+    cursor: cell;
+}
+
+.inverted {
+    border: red 2px dashed;
+}
