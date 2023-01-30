@@ -19,7 +19,7 @@ import {
   AuthorUpdatorType,
   LoadingProgress,
   Line,
-  PoemsByAuthor, 
+  PoemsByAuthor,
   PoemData} from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -78,7 +78,7 @@ let titlesByAuthor: FetchedTitlesByAuthor = {
 // two nested string keys access an array of any type
 type NestedContainer = { [key1: string]: { [key2: string]: any[] } }
 
-// Think of inpendNestedKeys as hierarchically categorizing everything 
+// Think of inpendNestedKeys as hierarchically categorizing everything
 //   after the first arg into the first arg
 // Access key1 of container and either INitialize or apPEND value to key2's list
 function inpendNestedKeys(
@@ -150,7 +150,7 @@ function PoemView() {
       const titles = titlesByAuthor.current[authorName];
 
       const title = titles[0];
-  
+
       const lines = getLines(fetchedAuthorData.current[authorName], title);
 
       const currentPoem = new Poem(authorName, title, lines);
@@ -174,14 +174,14 @@ function PoemView() {
       - Applies (chained) func(s) to modify clone (with any args)
       - Finally, sets the new author state to the modified clone
     */
-  const authorUpdater: AuthorUpdatorType = 
+  const authorUpdater: AuthorUpdatorType =
   (func: AuthorCloneUpdatorType, args?: any[]) => {
-    var clone = R.clone(author); // deep copy for modification and resetting    
+    var clone = R.clone(author); // deep copy for modification and resetting
     func(clone, ...(args ?? []));
     setAuthor(clone);
   }
 
-  const authorApplyWordFunc: AuthorCloneApplyWordFuncType = 
+  const authorApplyWordFunc: AuthorCloneApplyWordFuncType =
   (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
     func(clone, line, word);
     setAuthor(clone);
@@ -199,9 +199,9 @@ function PoemView() {
 
       authorNames[url] = authorJSON.authors;
       if (authorNames[url]?.length === 0) {
-        throw `No authors found at ${authorURL}`;  
+        throw `No authors found at ${authorURL}`;
       }
-      
+
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
         let poemsByAuthorURL = `${url}/author/${encodeURIComponent(authorName.trim())}`;
@@ -217,9 +217,9 @@ function PoemView() {
         const tba = titlesByAuthor as NestedContainer; // for brevity
         const fad = fetchedAuthorData as unknown as NestedContainer; // for brevity
         for (let poem of fetchedPoemsInitial) {
-          inpendNestedKeys(tba, url, authorName, poem.title);  
+          inpendNestedKeys(tba, url, authorName, poem.title);
           const newPoemData: PoemData = { title: poem.title, lines: poem.lines };
-          inpendNestedKeys(fad, url, authorName, newPoemData); 
+          inpendNestedKeys(fad, url, authorName, newPoemData);
         }
       }
     }
@@ -252,7 +252,7 @@ function PoemView() {
     const newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
 
     authorUpdater((authorClone: AuthorClone) => {
-      // It is important to update the possible titles, 
+      // It is important to update the possible titles,
       // so the selector will populate before the poem resets
       authorClone.titles = titlesByAuthor.current[authorClone.name];
       authorClone.setPoem(new Poem(authorName, newTitle, newLines));
