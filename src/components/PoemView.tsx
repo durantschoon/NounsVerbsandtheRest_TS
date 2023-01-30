@@ -20,7 +20,8 @@ import {
   LoadingProgress,
   Line,
   PoemsByAuthor,
-  PoemData} from "src/type-definitions";
+  PoemData
+} from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
 import { parsersByName, defaultParser } from "../dataClasses/Parser";
