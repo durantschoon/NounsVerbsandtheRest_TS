@@ -19,7 +19,6 @@ import {
   AuthorCloneApplyWordFuncType,
   AuthorName,
   AuthorUpdatorType,
-  AuthorProgressData,
   Line,
   PoemsByAuthor,
   PoemData,
@@ -106,15 +105,14 @@ function getLines(poems: PoemData[], title: string): Line[] {
 let authorMultiProgress: AuthorMultiProgressType = {};
 
 function PoemView() {
-  // TODO: if the parser is on the author, do we need this separate state? No, right?
-  const [parser, setParser] = useState(defaultParser);
   const [author, setAuthor] = useState(defaultAuthor as Author);
-
   const [toast, setToast] = useState({
     open: false,
     severity: "info",
     message: "",
   });
+
+  const parser = defaultParser
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
@@ -169,7 +167,7 @@ function PoemView() {
     }
   }
 
-  /* Updating Author:
+  /* Updating Author (and Poem) state:
       - Chain together any number of functions that will modify the authorData
         and pass those into authorUpdater
       - Clones current authorData
