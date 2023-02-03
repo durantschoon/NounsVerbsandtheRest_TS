@@ -126,7 +126,7 @@ function PoemView() {
 
   /* setHighestRankFetchedPoem Update the fetched poems to the "best" results
       - sets the value of fetchedPoems 'current' key to the first-most URL of poetryURLs
-      - calls setAuthorData on the latest data
+      - calls setAuthor on the latest data
     */
   function setHighestRankFetchedPoem() {
     for (let url of poetryURLs) {
@@ -218,13 +218,13 @@ function PoemView() {
         response = await fetch(poemsByAuthorURL);
         let fetchedPoemsInitial : PoemData[] = await response.json();
 
-        // Catetorize the data under titles by author and fetched author data
-        const tba = titlesByAuthor as NestedContainer; // for brevity
-        const fad = fetchedAuthorData as unknown as NestedContainer; // for brevity
+        // Add catetorized data to titlesByAuthor and fetchedAuthorData
+        const titleInfo = titlesByAuthor as NestedContainer; // for brevity
+        const authorInfo = fetchedAuthorData as unknown as NestedContainer; // for brevity
         for (let poem of fetchedPoemsInitial) {
-          inpendNestedKeys(tba, url, authorName, poem.title);
+          inpendNestedKeys(titleInfo, url, authorName, poem.title);
           const newPoemData: PoemData = { title: poem.title, lines: poem.lines };
-          inpendNestedKeys(fad, url, authorName, newPoemData);
+          inpendNestedKeys(authorInfo, url, authorName, newPoemData);
         }
       }
     }
