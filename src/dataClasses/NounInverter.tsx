@@ -1,7 +1,7 @@
 import * as R from "ramda";
 
 import Author from "./Author";
-import { FalseNegativeCount, FalsePositiveCount, Line, NounInverterRep, Tags } from "src/type-definitions";
+import { Line, NounInverterRep, Stats, Tags } from "src/type-definitions";
 import { Parser } from "./Parser";
 
 
@@ -26,8 +26,7 @@ const UNICODE_NBSP = "\u00A0";
   "noun" -> "non-noun" or vice-versa)
   */
 export class NounInverter {
-  falsePositiveCount: FalsePositiveCount;
-  falseNegativeCount: FalseNegativeCount;
+  stats: Stats;
   parser: Parser;
   poemTextLines: Line[];
   rep: NounInverterRep;
@@ -36,8 +35,7 @@ export class NounInverter {
     this.parser = author.currentParser;
     const lines = (this.poemTextLines = author.currentPoem.lines);
 
-    this.falsePositiveCount = 0;
-    this.falseNegativeCount = 0;
+    this.stats = { falseNeg: 0, falsePos: 0 }
     // nounInverters are represented by jagged arrays of arrays indexed by
     //    (line, word) internally represented as zero-based arrays
     //    but externally represented as one-based.
