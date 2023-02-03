@@ -1,7 +1,6 @@
 // import PropTypes from 'prop-types';
 import React, { useState, useEffect } from "react";
 import * as R from "ramda";
-import z, { unknown } from "zod";
 
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +23,8 @@ import {
   Line,
   PoemsByAuthor,
   PoemData,
-  PoetryURL
+  PoetryURL,
+  AuthorMultiProgressType
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -102,6 +102,9 @@ function getLines(poems: PoemData[], title: string): Line[] {
   return poem.lines
 }
 
+// can't loop and set state, so don't use useState
+let authorMultiProgress: AuthorMultiProgressType = {};
+
 function PoemView() {
   // TODO: if the parser is on the author, do we need this separate state? No, right?
   const [parser, setParser] = useState(defaultParser);
@@ -112,7 +115,6 @@ function PoemView() {
     severity: "info",
     message: "",
   });
-  const [authorMultiProgress, setAuthorMultiProgress] = useState([] as AuthorProgressData[]);
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
@@ -130,6 +132,9 @@ function PoemView() {
     */
   function setHighestRankFetchedPoem() {
     for (let url of poetryURLs) {
+      if (fetchedAuthorData[url] === undefined) {
+        return;
+      }
       const poems = fetchedAuthorData[url]!;
       if (Object.keys(poems).length > 0) {
         fetchedAuthorData.current = fetchedAuthorData[url]!;
@@ -147,9 +152,7 @@ function PoemView() {
       const authorName: AuthorName = authorNames.current[authorIndex];
 
       const titles = titlesByAuthor.current[authorName];
-
       const title = titles[0];
-
       const lines = getLines(fetchedAuthorData.current[authorName], title);
 
       const currentPoem = new Poem(authorName, title, lines);
@@ -191,7 +194,6 @@ function PoemView() {
     async function fetchPoems(url: string) {
       const authorURL = url + "/author";
 
-
       const { data, isLoading, isError, error } = useQuery([`authors:${authorURL}`], () =>
         axios.get(authorURL)
       );  
@@ -209,16 +211,11 @@ function PoemView() {
 
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
+        console.log({authorName})
         let poemsByAuthorURL = `${url}/author/${encodeURIComponent(authorName.trim())}`;
-        setAuthorMultiProgress( (prev) => {
-          return {
-            ...prev,
-            [url]: {
-              authorName,
-              percentage: 100 * (++countAuthors / numAuthors),
-            },
-          };
-        });
+        authorMultiProgress[url] = authorMultiProgress[url] === undefined ?
+          { authorName, percentage: 0 } :
+          { authorName, percentage: 100 * (++countAuthors / numAuthors) };        
 
         response = await fetch(poemsByAuthorURL);
         let fetchedPoemsInitial : PoemData[] = await response.json();
@@ -233,11 +230,15 @@ function PoemView() {
         }
       }
     }
+    
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
       try {
         return await fetchPoems(url);
       } catch (error: any) {
         const msg = 'message' in error ? error.message : "Unknown error";
+
+        console.log(`Error fetching poems from ${url}: ${msg}`) // debug
+
         return toastAlert(`${msg}: ${url}`, "warning");
       }
     });
@@ -279,8 +280,7 @@ function PoemView() {
       >
         <Grid item xs={6}>
           {author?.currentPoem && (
-            <PoemSelector {...{ author, authorUpdater, authorMultiProgress }}
-            />
+            <PoemSelector {...{ author, authorUpdater, authorMultiProgress }} />
           )}
         </Grid>
         <Grid item xs={6}>

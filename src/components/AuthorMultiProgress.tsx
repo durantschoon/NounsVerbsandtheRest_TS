@@ -1,21 +1,24 @@
 import AuthorProgress from "./AuthorProgress";
-import { AuthorProgressData } from "src/type-definitions";
+import { AuthorMultiProgressType, PoetryURL } from "src/type-definitions";
 
 interface Props {
-    authorMultiProgress: AuthorProgressData[]
+    authorMultiProgress: AuthorMultiProgressType
+    url: PoetryURL
 }
 
 function AuthorMultiProgress({authorMultiProgress} : Props) {
+    let allProgressComponents = [];
+    for (const [url, {authorName, percentage}] of Object.entries(authorMultiProgress)) {
+        allProgressComponents.push(
+            <AuthorProgress 
+                {...{authorName, percentage, url}}
+                key={authorName} 
+            /> 
+        )
+    }
     return (
         <div>
-            {authorMultiProgress instanceof Array && 
-                authorMultiProgress.map(
-                    ({authorName, percentage, url}: AuthorProgressData) => (
-                        <AuthorProgress 
-                            {...{authorName, percentage, url}}
-                            key={authorName} 
-                        /> 
-                ))}
+            {allProgressComponents}
         </div>
     )
 }

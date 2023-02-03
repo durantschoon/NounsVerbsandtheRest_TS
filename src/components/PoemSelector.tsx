@@ -10,8 +10,9 @@ import AuthorMultiProgress from "./AuthorMultiProgress";
 import { 
   AuthorName, 
   AuthorClone, 
-  AuthorProgressData,
   AuthorUpdatorType,
+  AuthorMultiProgressType,
+  PoetryURL,
 } from "src/type-definitions";
 
 function capitalizeFirstLetter(s: string) {
@@ -50,7 +51,7 @@ function selector(
 type Props = {
   author: Author, 
   authorUpdater: AuthorUpdatorType, 
-  authorMultiProgress: AuthorProgressData[]
+  authorMultiProgress: AuthorMultiProgressType
 }
 
 function PoemSelector({ author, authorUpdater, authorMultiProgress }: Props) {
@@ -86,7 +87,7 @@ function PoemSelector({ author, authorUpdater, authorMultiProgress }: Props) {
       <h1> Select a poem </h1>
       {aD && aD.name && aD.authorNames && authorSelector()}
       {aD && aD.currentPoem?.title && aD.titles && titleSelector()}
-      {<AuthorMultiProgress {...{authorMultiProgress}}/>}
+      {authorMultiProgress && <AuthorMultiProgress {...{authorMultiProgress}}/>}
       <textarea value={joinedLines} id="text-input" readOnly />
     </>
   );
