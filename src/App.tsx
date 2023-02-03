@@ -6,6 +6,9 @@ import Typography from "@mui/material/Typography";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import "./App.css";
 import PoemView from "./components/PoemView";
 
@@ -31,21 +34,26 @@ const theme = createTheme({
   },
 });
 
+const queryClient = new QueryClient();
+
 export default function App() {
-  return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-              Nouns, Verbs and the Rest
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Box sx={{ flexGrow: 1 }}>
-          <PoemView />
-        </Box>
-      </Box>
-    </ThemeProvider>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider theme={theme}>
+                <Box sx={{ flexGrow: 1 }}>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                                Nouns, Verbs and the Rest
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <PoemView />
+                    </Box>
+                </Box>
+            </ThemeProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+    );
 }

@@ -1,7 +1,10 @@
 // import PropTypes from 'prop-types';
 import React, { useState, useEffect } from "react";
 import * as R from "ramda";
-import z from "zod";
+import z, { unknown } from "zod";
+
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 import { Grid, Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -17,14 +20,15 @@ import {
   AuthorCloneApplyWordFuncType,
   AuthorName,
   AuthorUpdatorType,
-  LoadingProgress,
+  AuthorLoadingProgress,
   Line,
   PoemsByAuthor,
-  PoemData
+  PoemData,
+  PoetryURL
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
-import { parsersByName, defaultParser } from "../dataClasses/Parser";
+import { defaultParser } from "../dataClasses/Parser";
 import Poem from "../dataClasses/Poem";
 import sonnets, {
   defaultAuthorNames,
@@ -41,10 +45,7 @@ import "./PoemView.css";
 // ]);
 // debug values
 // const PoetryURLs = z.enum(["https://poetrydb.org", "http://165.227.95.56:3000"]);
-const poetryURLs = ["https://poetrydb.org", "http://165.227.95.56:3000"]
-
-const zurl = z.string().url();
-type PoetryURL = z.infer<typeof zurl>
+const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
 
 /* For the following data structures with these keys being valid
    'default', 'current' or a URL from poetryURLs
@@ -111,10 +112,7 @@ function PoemView() {
     severity: "info",
     message: "",
   });
-  const [loadingProgress, setLoadingProgress] = useState({
-    authorName: "",
-    percentage: 0,
-  } as LoadingProgress);
+  const [authorMultiProgress, setAuthorMultiProgress] = useState([] as AuthorLoadingProgress[]);
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
@@ -192,6 +190,12 @@ function PoemView() {
   useEffect(() => {
     async function fetchPoems(url: string) {
       const authorURL = url + "/author";
+
+
+      const { data, isLoading, isError, error } = useQuery([`authors:${authorURL}`], () =>
+        axios.get(authorURL)
+      );  
+
       let response = await fetch(authorURL);
       const authorJSON = await response.json();
 
@@ -206,9 +210,14 @@ function PoemView() {
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
         let poemsByAuthorURL = `${url}/author/${encodeURIComponent(authorName.trim())}`;
-        setLoadingProgress({
-          authorName,
-          percentage: 100 * (++countAuthors / numAuthors),
+        setAuthorMultiProgress( (prev) => {
+          return {
+            ...prev,
+            [url]: {
+              authorName,
+              percentage: 100 * (++countAuthors / numAuthors),
+            },
+          };
         });
 
         response = await fetch(poemsByAuthorURL);
@@ -227,8 +236,9 @@ function PoemView() {
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
       try {
         return await fetchPoems(url);
-      } catch (error: { message: string }) {
-        return toastAlert(`${error.message}: ${url}`, "warning");
+      } catch (error: any) {
+        const msg = 'message' in error ? error.message : "Unknown error";
+        return toastAlert(`${msg}: ${url}`, "warning");
       }
     });
     Promise.all(fetchedPromises).then(() => setHighestRankFetchedPoem());
@@ -269,7 +279,7 @@ function PoemView() {
       >
         <Grid item xs={6}>
           {author?.currentPoem && (
-            <PoemSelector {...{ author, authorUpdater, loadingProgress }}
+            <PoemSelector {...{ author, authorUpdater, authorMultiProgress }}
             />
           )}
         </Grid>

@@ -57,7 +57,7 @@ type FalseNegative = z.infer<typeof schemas.falseNegative>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
 
-type LoadingProgress = z.infer<typeof schemas.loadingProgress>;
+type AuthorLoadingProgress = z.infer<typeof schemas.authorLoadingProgress>;
 
 // type ClickEvent = React.SyntheticEvent<MouseEvent>
 // type ClickEvent = React.SyntheticEvent<MouseEvent, EventTarget>
@@ -66,3 +66,6 @@ type LoadingProgress = z.infer<typeof schemas.loadingProgress>;
 type ClickEvent = React.MouseEvent
 
 type ChangeEvent = React.ChangeEvent
+
+type PoetryURL = z.infer<typeof schemas.poetryURL>
+type AuthorMultiProgressType = z.infer<typeof schemas.authorMultiProgress>

@@ -1,14 +1,11 @@
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 
-import { AuthorName } from "src/type-definitions";
+import { AuthorLoadingProgress, AuthorName } from "src/type-definitions";
 
-type Props = {
-  authorName: AuthorName,
-  percentage: number
-}
+var randomColor = '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6, '0');
 
-function AuthorProgress({authorName, percentage}: Props) {
+function AuthorProgress({authorName, percentage, url}: AuthorLoadingProgress) {
     return (
         <Box id="progress-box" sx={{ width: '90%', margin: '1rem' }}>
           <LinearProgress 
@@ -18,6 +15,7 @@ function AuthorProgress({authorName, percentage}: Props) {
             aria-busy={percentage < 100 ? true : false}
           />
           <i>{authorName}</i>
+          {url && `<br/>${url}`}
         </Box>
     )
 }

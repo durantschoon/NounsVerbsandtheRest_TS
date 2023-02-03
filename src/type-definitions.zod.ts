@@ -76,7 +76,13 @@ export const parserMap = z.record(z.string(), z.instanceof(Parser));
 const percentage = z.number().refine(
     (val) => val >= 0 && val <= 100,
 )
-export const loadingProgress = z.object({
+
+export const poetryURL = z.string().url();
+
+export const authorLoadingProgress = z.object({
     authorName: z.string(),
     percentage: percentage,
-  });
+    url: poetryURL.optional(),
+});
+
+export const authorMultiProgress = z.record(poetryURL, authorLoadingProgress);
