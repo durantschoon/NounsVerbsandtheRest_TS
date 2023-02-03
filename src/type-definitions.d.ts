@@ -53,7 +53,7 @@ type NounInverterRep = z.infer<typeof schemas.nounInverterRep>
 type Tags = z.infer<typeof schemas.tags>
 
 type FalsePositiveCount = z.infer<typeof schemas.falsePositiveCount>
-type falseNegativeCount = z.infer<typeof schemas.falseNegativeCount>
+type FalseNegativeCount = z.infer<typeof schemas.falseNegativeCount>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
 
@@ -69,3 +69,5 @@ type ChangeEvent = React.ChangeEvent
 
 type PoetryURL = z.infer<typeof schemas.poetryURL>
 type AuthorMultiProgressType = z.infer<typeof schemas.authorMultiProgress>
+
+type Toast = z.infer<typeof schemas.toast>

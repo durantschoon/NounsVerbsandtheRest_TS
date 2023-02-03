@@ -237,7 +237,7 @@ function PoemView() {
 
         console.log(`Error fetching poems from ${url}: ${msg}`) // debug
 
-        return toastAlert(`${msg}: ${url}`, "warning");
+        return toastAlert(`${msg}: ${url}`, "error");
       }
     });
     Promise.all(fetchedPromises).then(() => setHighestRankFetchedPoem());
