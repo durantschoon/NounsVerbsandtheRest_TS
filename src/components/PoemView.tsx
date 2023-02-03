@@ -264,7 +264,7 @@ function PoemView() {
     const newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
 
     authorUpdater((authorClone: AuthorClone) => {
-      // It is important to update the possible titles,
+      // It is important to update the possible titles first,
       // so the selector will populate before the poem resets
       authorClone.titles = titlesByAuthor.current[authorClone.name];
       authorClone.setPoem(new Poem(authorName, newTitle, newLines));
