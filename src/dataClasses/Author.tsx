@@ -54,7 +54,7 @@ export default class Author {
     const nounInverter = this.nounInverter;
     if (nounInverter) {
       nounInverter.falsePositiveCount = falsePos;
-      nounInverter.falseNegativeCount = falseNeg;
+      nounInverter.falseNegativeCountCount = falseNeg;
     }
   }
 };

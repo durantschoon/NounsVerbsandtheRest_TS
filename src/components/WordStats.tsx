@@ -1,4 +1,12 @@
-function WordStats({ parserName, falsePositiveCount, falseNegativeCount }) {
+import { FalsePositiveCount, FalseNegativeCount } from "src/type-definitions.d";
+
+interface WordStatsProps {
+  parserName: string;
+  falsePositiveCount: FalsePositiveCount;
+  falseNegativeCount: FalseNegativeCount;
+}
+
+function WordStats({ parserName, falsePositiveCount, falseNegativeCount } : WordStatsProps) {
   return (
     <fieldset id="stats-fieldset">
       <legend id="stats-legend">

@@ -52,12 +52,12 @@ type NounInverterRep = z.infer<typeof schemas.nounInverterRep>
 
 type Tags = z.infer<typeof schemas.tags>
 
-type FalsePositive = z.infer<typeof schemas.falsePositive>
-type FalseNegative = z.infer<typeof schemas.falseNegative>
+type FalsePositiveCount = z.infer<typeof schemas.falsePositiveCount>
+type falseNegativeCount = z.infer<typeof schemas.falseNegativeCount>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
 
-type AuthorProgressData = z.infer<typeof schemas.AuthorProgressData>;
+type AuthorProgressData = z.infer<typeof schemas.authorProgressData>;
 
 // type ClickEvent = React.SyntheticEvent<MouseEvent>
 // type ClickEvent = React.SyntheticEvent<MouseEvent, EventTarget>
