@@ -1,13 +1,8 @@
 import AuthorProgress from "./AuthorProgress";
-import { 
-    AuthorLoadingProgress,
-    AuthorMultiProgressType,
-    PoetryURL,
-} from "src/type-definitions";
-import { authorLoadingProgress } from "src/type-definitions.zod";
+import { AuthorProgressData } from "src/type-definitions";
 
 interface Props {
-    authorMultiProgress: AuthorLoadingProgress[]
+    authorMultiProgress: AuthorProgressData[]
 }
 
 function AuthorMultiProgress({authorMultiProgress} : Props) {
@@ -15,7 +10,7 @@ function AuthorMultiProgress({authorMultiProgress} : Props) {
         <div>
             {authorMultiProgress instanceof Array && 
                 authorMultiProgress.map(
-                    ({authorName, percentage, url}: AuthorLoadingProgress) => (
+                    ({authorName, percentage, url}: AuthorProgressData) => (
                         <AuthorProgress 
                             {...{authorName, percentage, url}}
                             key={authorName} 

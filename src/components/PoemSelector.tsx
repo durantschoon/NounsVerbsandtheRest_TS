@@ -6,12 +6,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
 import Author from "../dataClasses/Author";
-import AuthorProgress from "./AuthorProgress";
+import AuthorMultiProgress from "./AuthorMultiProgress";
 import { 
   AuthorName, 
   AuthorClone, 
+  AuthorProgressData,
   AuthorUpdatorType,
-  LoadingProgress,
 } from "src/type-definitions";
 
 function capitalizeFirstLetter(s: string) {
@@ -50,10 +50,10 @@ function selector(
 type Props = {
   author: Author, 
   authorUpdater: AuthorUpdatorType, 
-  loadingProgress: LoadingProgress
+  authorMultiProgress: AuthorProgressData[]
 }
 
-function PoemSelector({ author, authorUpdater, loadingProgress }: Props) {
+function PoemSelector({ author, authorUpdater, authorMultiProgress }: Props) {
   function authorSelector() {
     function setAuthorName(name: AuthorName) {
       return authorUpdater((clone: AuthorClone) => {
@@ -86,9 +86,7 @@ function PoemSelector({ author, authorUpdater, loadingProgress }: Props) {
       <h1> Select a poem </h1>
       {aD && aD.name && aD.authorNames && authorSelector()}
       {aD && aD.currentPoem?.title && aD.titles && titleSelector()}
-      {loadingProgress.percentage > 0 && loadingProgress.percentage < 100 && (
-        <AuthorProgress {...loadingProgress} />
-      )}
+      {<AuthorMultiProgress {...{authorMultiProgress}}/>}
       <textarea value={joinedLines} id="text-input" readOnly />
     </>
   );

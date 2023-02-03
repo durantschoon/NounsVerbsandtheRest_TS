@@ -79,10 +79,10 @@ const percentage = z.number().refine(
 
 export const poetryURL = z.string().url();
 
-export const authorLoadingProgress = z.object({
+export const authorProgressData = z.object({
     authorName: z.string(),
     percentage: percentage,
     url: poetryURL.optional(),
 });
 
-export const authorMultiProgress = z.record(poetryURL, authorLoadingProgress);
+export const authorMultiProgress = z.record(poetryURL, authorProgressData);

@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 
-import { AuthorLoadingProgress, AuthorName } from "src/type-definitions";
+import { AuthorProgressData } from "src/type-definitions";
 
 var randomColor = '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6, '0');
 
-function AuthorProgress({authorName, percentage, url}: AuthorLoadingProgress) {
+function AuthorProgress({authorName, percentage, url}: AuthorProgressData) {
     return (
         <Box id="progress-box" sx={{ width: '90%', margin: '1rem' }}>
           <LinearProgress 

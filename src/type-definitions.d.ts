@@ -57,7 +57,7 @@ type FalseNegative = z.infer<typeof schemas.falseNegative>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
 
-type AuthorLoadingProgress = z.infer<typeof schemas.authorLoadingProgress>;
+type AuthorProgressData = z.infer<typeof schemas.AuthorProgressData>;
 
 // type ClickEvent = React.SyntheticEvent<MouseEvent>
 // type ClickEvent = React.SyntheticEvent<MouseEvent, EventTarget>

@@ -20,7 +20,7 @@ import {
   AuthorCloneApplyWordFuncType,
   AuthorName,
   AuthorUpdatorType,
-  AuthorLoadingProgress,
+  AuthorProgressData,
   Line,
   PoemsByAuthor,
   PoemData,
@@ -39,12 +39,12 @@ import "./PoemView.css";
 
 // Order poetry urls "best" to "worst" (highest priority first)
 // Define as an enum so that we can create a types later
-// const PoetryURLs = z.enum([
+// const poetryURLs: PoetryURL[] = [
 //   "http://fetch-should-fail.com",
 //   "http://165.227.95.56:3000",
-// ]);
+// ]
 // debug values
-// const PoetryURLs = z.enum(["https://poetrydb.org", "http://165.227.95.56:3000"]);
+// const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
 const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
 
 /* For the following data structures with these keys being valid
@@ -112,7 +112,7 @@ function PoemView() {
     severity: "info",
     message: "",
   });
-  const [authorMultiProgress, setAuthorMultiProgress] = useState([] as AuthorLoadingProgress[]);
+  const [authorMultiProgress, setAuthorMultiProgress] = useState([] as AuthorProgressData[]);
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
