@@ -85,3 +85,9 @@ export const authorProgressData = z.object({
 });
 
 export const authorMultiProgress = z.record(poetryURL, authorProgressData);
+
+export const toast = z.object({ 
+    message: z.string(), 
+    severity: z.union([z.literal("error"), z.literal("warning"), z.literal("info"), z.literal("success")]),
+    open: z.boolean() 
+});

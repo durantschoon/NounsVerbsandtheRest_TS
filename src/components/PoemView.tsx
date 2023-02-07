@@ -17,13 +17,14 @@ import {
   AuthorCloneUpdatorType,
   AuthorCloneUpdatorWithWordType,
   AuthorCloneApplyWordFuncType,
+  AuthorMultiProgressType,
   AuthorName,
   AuthorUpdatorType,
   Line,
   PoemsByAuthor,
   PoemData,
   PoetryURL,
-  AuthorMultiProgressType
+  Toast  
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -105,19 +106,29 @@ function getLines(poems: PoemData[], title: string): Line[] {
 let authorMultiProgress: AuthorMultiProgressType = {};
 
 function PoemView() {
-  const [author, setAuthor] = useState(defaultAuthor as Author);
-  const [toast, setToast] = useState({
+  const [author, setAuthorInner] = useState(defaultAuthor as Author);
+  const [toast, setToastInner] = useState({
     open: false,
     severity: "info",
     message: "",
   });
+
+  function setAuthor(author: Author) {
+    console.log("setAuthor called", {author});
+    setAuthorInner(author);
+  }
+
+  function setToast(arg: any) {
+    console.log("setToast called", {arg});
+    setToastInner(arg);
+  }
 
   const parser = defaultParser
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
   function setSnackOpen(openOrClosed: boolean) {
-    setToast((prevToast) => ({ ...prevToast, open: openOrClosed }));
+    setToast((prevToast: Toast) => ({ ...prevToast, open: openOrClosed }));
   }
 
   function toastAlert(message: string, severity: string) {
@@ -192,6 +203,8 @@ function PoemView() {
     async function fetchPoems(url: string) {
       const authorURL = url + "/author";
 
+      // STOPPED_HERE: fix this by using useQuery properly ... oh, maybe this can only be done up in the component that calls useQuery
+
       const { data, isLoading, isError, error } = useQuery([`authors:${authorURL}`], () =>
         axios.get(authorURL)
       );  
@@ -261,11 +274,11 @@ function PoemView() {
     const newTitle = titlesByAuthor.current?.[authorName]?.[0];
     const newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
 
-    authorUpdater((authorClone: AuthorClone) => {
+    authorUpdater((clone: AuthorClone) => {
       // It is important to update the possible titles first,
       // so the selector will populate before the poem resets
-      authorClone.titles = titlesByAuthor.current[authorClone.name];
-      authorClone.setPoem(new Poem(authorName, newTitle, newLines));
+      clone.titles = titlesByAuthor.current[clone.name];
+      clone.setPoem(new Poem(authorName, newTitle, newLines));
     });
   }, [author.name]);
 
