@@ -50,11 +50,10 @@ export default class Author {
     this.recomputeNounOutlines!();
   }
 
-  updateCurrentStats(this: Author,  {falsePos, falseNeg}: Stats) {
+  updateCurrentStats(this: Author,  stats: Stats) {
     const nounInverter = this.nounInverter;
     if (nounInverter) {
-      nounInverter.falsePositiveCount = falsePos;
-      nounInverter.falseNegativeCount = falseNeg;
+      nounInverter.stats = stats;
     }
   }
 };

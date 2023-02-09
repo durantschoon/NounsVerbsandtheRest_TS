@@ -1,7 +1,9 @@
 // import PropTypes from 'prop-types';
 import React, { useState, useEffect } from "react";
 import * as R from "ramda";
-import z from "zod";
+
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 import { Grid, Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -17,13 +19,16 @@ import {
   AuthorCloneApplyWordFuncType,
   AuthorName,
   AuthorUpdatorType,
-  LoadingProgress,
   Line,
-  PoemsByAuthor, 
-  PoemData} from "src/type-definitions";
+  PoemsByAuthor,
+  PoemData,
+  PoetryURL,
+  Toast,
+  AuthorData
+} from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
-import { parsersByName, defaultParser } from "../dataClasses/Parser";
+import { defaultParser } from "../dataClasses/Parser";
 import Poem from "../dataClasses/Poem";
 import sonnets, {
   defaultAuthorNames,
@@ -34,16 +39,13 @@ import "./PoemView.css";
 
 // Order poetry urls "best" to "worst" (highest priority first)
 // Define as an enum so that we can create a types later
-// const PoetryURLs = z.enum([
+// const poetryURLs: PoetryURL[] = [
 //   "http://fetch-should-fail.com",
 //   "http://165.227.95.56:3000",
-// ]);
+// ]
 // debug values
-// const PoetryURLs = z.enum(["https://poetrydb.org", "http://165.227.95.56:3000"]);
-const poetryURLs = ["https://poetrydb.org", "http://165.227.95.56:3000"]
-
-const zurl = z.string().url();
-type PoetryURL = z.infer<typeof zurl>
+// const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
+const poetryURLs: PoetryURL[] = ["https://poetrydb.org"]
 
 /* For the following data structures with these keys being valid
    'default', 'current' or a URL from poetryURLs
@@ -78,7 +80,7 @@ let titlesByAuthor: FetchedTitlesByAuthor = {
 // two nested string keys access an array of any type
 type NestedContainer = { [key1: string]: { [key2: string]: any[] } }
 
-// Think of inpendNestedKeys as hierarchically categorizing everything 
+// Think of inpendNestedKeys as hierarchically categorizing everything
 //   after the first arg into the first arg
 // Access key1 of container and either INitialize or apPEND value to key2's list
 function inpendNestedKeys(
@@ -101,24 +103,27 @@ function getLines(poems: PoemData[], title: string): Line[] {
 }
 
 function PoemView() {
-  // TODO: if the parser is on the author, do we need this separate state? No, right?
-  const [parser, setParser] = useState(defaultParser);
-  const [author, setAuthor] = useState(defaultAuthor as Author);
-
-  const [toast, setToast] = useState({
+  const [author, setAuthorInner] = useState(defaultAuthor as Author);
+  const [toast, setToastInner] = useState({
     open: false,
     severity: "info",
     message: "",
   });
-  const [loadingProgress, setLoadingProgress] = useState({
-    authorName: "",
-    percentage: 0,
-  } as LoadingProgress);
+
+  function setAuthor(author: Author) {
+    setAuthorInner(author);
+  }
+
+  function setToast(arg: any) {
+    setToastInner(arg);
+  }
+
+  const parser = defaultParser
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
 
   function setSnackOpen(openOrClosed: boolean) {
-    setToast((prevToast) => ({ ...prevToast, open: openOrClosed }));
+    setToast((prevToast: Toast) => ({ ...prevToast, open: openOrClosed }));
   }
 
   function toastAlert(message: string, severity: string) {
@@ -127,10 +132,13 @@ function PoemView() {
 
   /* setHighestRankFetchedPoem Update the fetched poems to the "best" results
       - sets the value of fetchedPoems 'current' key to the first-most URL of poetryURLs
-      - calls setAuthorData on the latest data
+      - calls setAuthor on the latest data
     */
   function setHighestRankFetchedPoem() {
     for (let url of poetryURLs) {
+      if (fetchedAuthorData[url] === undefined) {
+        return;
+      }
       const poems = fetchedAuthorData[url]!;
       if (Object.keys(poems).length > 0) {
         fetchedAuthorData.current = fetchedAuthorData[url]!;
@@ -148,9 +156,7 @@ function PoemView() {
       const authorName: AuthorName = authorNames.current[authorIndex];
 
       const titles = titlesByAuthor.current[authorName];
-
       const title = titles[0];
-  
       const lines = getLines(fetchedAuthorData.current[authorName], title);
 
       const currentPoem = new Poem(authorName, title, lines);
@@ -167,67 +173,73 @@ function PoemView() {
     }
   }
 
-  /* Updating Author:
+  /* Updating Author (and Poem) state:
       - Chain together any number of functions that will modify the authorData
         and pass those into authorUpdater
       - Clones current authorData
       - Applies (chained) func(s) to modify clone (with any args)
       - Finally, sets the new author state to the modified clone
     */
-  const authorUpdater: AuthorUpdatorType = 
-  (func: AuthorCloneUpdatorType, args?: any[]) => {
-    var clone = R.clone(author); // deep copy for modification and resetting    
-    func(clone, ...(args ?? []));
-    setAuthor(clone);
-  }
+  const authorUpdater: AuthorUpdatorType =
+    (func: AuthorCloneUpdatorType, args?: any[]) => {
+      var clone = R.clone(author); // deep copy for modification and resetting
+      func(clone, ...(args ?? []));
+      setAuthor(clone);
+    }
 
-  const authorApplyWordFunc: AuthorCloneApplyWordFuncType = 
-  (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
-    func(clone, line, word);
-    setAuthor(clone);
-  }
+  const authorApplyWordFunc: AuthorCloneApplyWordFuncType =
+    (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
+      func(clone, line, word);
+      setAuthor(clone);
+    }
 
-  // Initial useEffect hook tries to fetch poems from URLs
-  useEffect(() => {
-    async function fetchPoems(url: string) {
-      const authorURL = url + "/author";
+    useEffect(() => {
+        async function fetchPoems(url: PoetryURL) {
+            const authorURL = url + "/author";
       let response = await fetch(authorURL);
       const authorJSON = await response.json();
-
-      const numAuthors = authorNames.current.length;
+      const numAuthors = authorNames["current"].length;
       let countAuthors = 0;
 
       authorNames[url] = authorJSON.authors;
       if (authorNames[url]?.length === 0) {
-        throw `No authors found at ${authorURL}`;  
+        throw `No authors found at ${authorURL}`;
       }
-      
+
+      toastAlert(`Fetching ${authorNames[url]?.length} authors from ${url} ...`, "info");
+
+      // const firstAuthor = authorNames[url]![0];
+      // if (fetchedAuthorData.current[firstAuthor] === undefined) {
+      //   setHighestRankFetchedPoem()
+      // }
+
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
-        let poemsByAuthorURL = `${url}/author/${encodeURIComponent(authorName.trim())}`;
-        setLoadingProgress({
-          authorName,
-          percentage: 100 * (++countAuthors / numAuthors),
-        });
+        let poemsByAuthorURL = `${url}/author/${encodeURIComponent(
+          authorName.trim()
+        )}`;
 
         response = await fetch(poemsByAuthorURL);
-        let fetchedPoemsInitial : PoemData[] = await response.json();
+        let fetchedPoemsInitial = await response.json();
 
-        // Catetorize the data under titles by author and fetched author data
-        const tba = titlesByAuthor as NestedContainer; // for brevity
-        const fad = fetchedAuthorData as unknown as NestedContainer; // for brevity
-        for (let poem of fetchedPoemsInitial) {
-          inpendNestedKeys(tba, url, authorName, poem.title);  
+        titlesByAuthor.current[authorName] = [] // reset titlesByAuthor
+
+        // Add catetorized data to titlesByAuthor and fetchedAuthorData
+        const titleInfo = titlesByAuthor as NestedContainer; // for brevity
+        const authorInfo = fetchedAuthorData as unknown as NestedContainer; // for brevity
+        for (let poem of fetchedPoemsInitial!) {
+          inpendNestedKeys(titleInfo, url, authorName, poem.title);
           const newPoemData: PoemData = { title: poem.title, lines: poem.lines };
-          inpendNestedKeys(fad, url, authorName, newPoemData); 
+          inpendNestedKeys(authorInfo, url, authorName, newPoemData);
         }
       }
     }
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
       try {
         return await fetchPoems(url);
-      } catch (error: { message: string }) {
-        return toastAlert(`${error.message}: ${url}`, "warning");
+      } catch (error: any) {
+        const msg = 'message' in error ? error.message : "Unknown error";
+        return toastAlert(`${msg}: ${url}`, "error");
       }
     });
     Promise.all(fetchedPromises).then(() => setHighestRankFetchedPoem());
@@ -238,6 +250,9 @@ function PoemView() {
     const authorName: AuthorName = author.name;
     const title = author.stagedTitleChange;
 
+    if (fetchedAuthorData.current[authorName] === undefined) {
+      return; // not ready yet
+    }
     const newLines: Line[] = getLines(fetchedAuthorData.current[authorName], title);
 
     authorUpdater((clone: AuthorClone) => {
@@ -248,14 +263,17 @@ function PoemView() {
   // When the author name changes, set the current title to the first one fetched
   useEffect(() => {
     const authorName = author.name;
+    if (fetchedAuthorData.current[authorName] === undefined) {
+      return; // not ready yet
+    }
     const newTitle = titlesByAuthor.current?.[authorName]?.[0];
     const newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
 
-    authorUpdater((authorClone: AuthorClone) => {
-      // It is important to update the possible titles, 
+    authorUpdater((clone: AuthorClone) => {
+      // It is important to update the possible titles first,
       // so the selector will populate before the poem resets
-      authorClone.titles = titlesByAuthor.current[authorClone.name];
-      authorClone.setPoem(new Poem(authorName, newTitle, newLines));
+      clone.titles = titlesByAuthor.current[clone.name];
+      clone.setPoem(new Poem(authorName, newTitle, newLines));
     });
   }, [author.name]);
 
@@ -268,12 +286,11 @@ function PoemView() {
       >
         <Grid item xs={6}>
           {author?.currentPoem && (
-            <PoemSelector {...{ author, authorUpdater, loadingProgress }}
-            />
+            <PoemSelector {...{ author, authorUpdater }} />
           )}
         </Grid>
         <Grid item xs={6}>
-          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc, parser }}/>
+          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc, parser }} />
         </Grid>
       </Grid>
       <SnackbarAlerts {...{ ...toast, setSnackOpen }} />

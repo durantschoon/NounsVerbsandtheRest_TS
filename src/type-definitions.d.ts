@@ -52,12 +52,10 @@ type NounInverterRep = z.infer<typeof schemas.nounInverterRep>
 
 type Tags = z.infer<typeof schemas.tags>
 
-type FalsePositive = z.infer<typeof schemas.falsePositive>
-type FalseNegative = z.infer<typeof schemas.falseNegative>
+type FalsePositiveCount = z.infer<typeof schemas.falsePositiveCount>
+type FalseNegativeCount = z.infer<typeof schemas.falseNegativeCount>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
-
-type LoadingProgress = z.infer<typeof schemas.loadingProgress>;
 
 // type ClickEvent = React.SyntheticEvent<MouseEvent>
 // type ClickEvent = React.SyntheticEvent<MouseEvent, EventTarget>
@@ -66,3 +64,8 @@ type LoadingProgress = z.infer<typeof schemas.loadingProgress>;
 type ClickEvent = React.MouseEvent
 
 type ChangeEvent = React.ChangeEvent
+
+type URL = z.infer<typeof schemas.url>
+type PoetryURL = z.infer<typeof schemas.poetryURL>
+
+type Toast = z.infer<typeof schemas.toast>

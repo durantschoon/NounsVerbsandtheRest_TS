@@ -19,17 +19,17 @@ export const poem = z.instanceof(Poem);
 export const poemsByAuthor = z.record(authorName, z.array(poemData));
 export const titlesByAuthor = z.record(authorName, z.array(title));
 
-export const falsePositive =  z.number().refine(
+export const falsePositiveCount =  z.number().refine(
     (val) => val >= 0,
     (val) => ({ message: `False Positive ${val} must be greater than or equal to 0` })
 )
-export const falseNegative = z.number().refine(
+export const falseNegativeCount = z.number().refine(
     (val) => val >= 0,
     (val) => ({ message: `False Negative ${val} must be greater than or equal to 0` })
 )
 export const stats = z.object({
-    falsePos: falsePositive, 
-    falseNeg: falseNegative
+    falsePos: falsePositiveCount, 
+    falseNeg: falseNegativeCount
 })
 
 export const parser = z.instanceof(Parser);
@@ -49,9 +49,9 @@ export const parser = z.instanceof(Parser);
 //      a noun and vice-versa
 export const nounInverterRep = z.array(z.array(z.boolean()))
 export const nounInverter = z.object({
-    parser: parser,
-    falsePositiveCount: falsePositive,
-    falseNegativeCount: falseNegative,
+    parser,
+    falsePositiveCount,
+    falseNegativeCount,
     rep: nounInverterRep,
     recomputeNounOutlines: z.function(),
 })
@@ -76,7 +76,12 @@ export const parserMap = z.record(z.string(), z.instanceof(Parser));
 const percentage = z.number().refine(
     (val) => val >= 0 && val <= 100,
 )
-export const loadingProgress = z.object({
-    authorName: z.string(),
-    percentage: percentage,
-  });
+
+export const url = z.string().url();
+export const poetryURL = url;
+
+export const toast = z.object({ 
+    message: z.string(), 
+    severity: z.union([z.literal("error"), z.literal("warning"), z.literal("info"), z.literal("success")]),
+    open: z.boolean() 
+});
