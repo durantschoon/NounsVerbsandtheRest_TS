@@ -31,6 +31,8 @@ textarea, #text-output {
 
 #stats-fieldset {
     margin-top: 0.5rem;
+    position: sticky;
+    bottom: 0;
 }
 
 #stats-legend {
