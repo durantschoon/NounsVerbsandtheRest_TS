@@ -80,13 +80,6 @@ const percentage = z.number().refine(
 export const url = z.string().url();
 export const poetryURL = url;
 
-export const authorProgressData = z.object({
-    authorName: z.string(),
-    percentage: percentage
-});
-
-export const authorMultiProgress = z.record(poetryURL, authorProgressData);
-
 export const toast = z.object({ 
     message: z.string(), 
     severity: z.union([z.literal("error"), z.literal("warning"), z.literal("info"), z.literal("success")]),

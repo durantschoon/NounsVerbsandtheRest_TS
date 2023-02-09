@@ -57,8 +57,6 @@ type FalseNegativeCount = z.infer<typeof schemas.falseNegativeCount>
 
 type ParsersByName = z.infer<typeof schemas.parserMap>;
 
-type AuthorProgressData = z.infer<typeof schemas.authorProgressData>;
-
 // type ClickEvent = React.SyntheticEvent<MouseEvent>
 // type ClickEvent = React.SyntheticEvent<MouseEvent, EventTarget>
 // type ClickEvent = React.SyntheticEvent<EventTarget>
@@ -69,6 +67,5 @@ type ChangeEvent = React.ChangeEvent
 
 type URL = z.infer<typeof schemas.url>
 type PoetryURL = z.infer<typeof schemas.poetryURL>
-type AuthorMultiProgressType = z.infer<typeof schemas.authorMultiProgress>
 
 type Toast = z.infer<typeof schemas.toast>

@@ -6,12 +6,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
 import Author from "../dataClasses/Author";
-import AuthorMultiProgress from "./AuthorMultiProgress";
 import { 
   AuthorName, 
   AuthorClone, 
   AuthorUpdatorType,
-  AuthorMultiProgressType,
   PoetryURL,
 } from "src/type-definitions";
 
@@ -51,10 +49,9 @@ function selector(
 type Props = {
   author: Author, 
   authorUpdater: AuthorUpdatorType, 
-  authorMultiProgress: AuthorMultiProgressType
 }
 
-function PoemSelector({ author, authorUpdater, authorMultiProgress }: Props) {
+function PoemSelector({ author, authorUpdater }: Props) {
   function authorSelector() {
     function setAuthorName(name: AuthorName) {
       return authorUpdater((clone: AuthorClone) => {
@@ -87,7 +84,6 @@ function PoemSelector({ author, authorUpdater, authorMultiProgress }: Props) {
       <h1> Select a poem </h1>
       {aD && aD.name && aD.authorNames && authorSelector()}
       {aD && aD.currentPoem?.title && aD.titles && titleSelector()}
-      {authorMultiProgress && <AuthorMultiProgress {...{authorMultiProgress}}/>}
       <textarea value={joinedLines} id="text-input" readOnly />
     </>
   );

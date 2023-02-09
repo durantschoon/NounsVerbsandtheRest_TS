@@ -17,7 +17,6 @@ import {
   AuthorCloneUpdatorType,
   AuthorCloneUpdatorWithWordType,
   AuthorCloneApplyWordFuncType,
-  AuthorMultiProgressType,
   AuthorName,
   AuthorUpdatorType,
   Line,
@@ -102,9 +101,6 @@ function getLines(poems: PoemData[], title: string): Line[] {
   const poem: PoemData = poems.filter((poem: PoemData) => poem.title === title)[0];
   return poem.lines
 }
-
-// can't loop and set state, so don't use useState
-let authorMultiProgress: AuthorMultiProgressType = {};
 
 function PoemView() {
   const [author, setAuthorInner] = useState(defaultAuthor as Author);
@@ -197,21 +193,14 @@ function PoemView() {
       setAuthor(clone);
     }
 
-    /* STOPPED_HERE: fix this by using useQuery properly ... oh, maybe this can only be done up in the component that calls useQuery
-       new branch to remove concurrent url fetching
-
+    /* STOPPED_HERE: 
        New Plan:
        1. ✅ Restore promise.all code
-       2. Remove the progress bar code
-       3. Stop adding code improvements
-       4. Minimally spruce up the UI
-
-       Old Plan:
-       1. ✅ need to use promise.all again
-       2. simplify the progress bar code
-       3. write to local storage
-       4. ask to write all data to a file
-       5. Maybe create my own server (django?) to serve the data in a format consumable by react-query
+       2. ✅ Remove the progress bar code       
+       3. Last-ish fix: text should behave when parser is changed
+       4. Consider writing to local storage
+       5. Stop adding code improvements
+       6. Minimally spruce up the UI
      */
 
     useEffect(() => {
@@ -307,7 +296,7 @@ function PoemView() {
       >
         <Grid item xs={6}>
           {author?.currentPoem && (
-            <PoemSelector {...{ author, authorUpdater, authorMultiProgress }} />
+            <PoemSelector {...{ author, authorUpdater }} />
           )}
         </Grid>
         <Grid item xs={6}>
