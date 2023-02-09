@@ -24,7 +24,8 @@ import {
   PoemsByAuthor,
   PoemData,
   PoetryURL,
-  Toast  
+  Toast,
+  AuthorData
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -45,7 +46,7 @@ import "./PoemView.css";
 // ]
 // debug values
 // const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
-const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
+const poetryURLs: PoetryURL[] = ["https://poetrydb.org"]
 
 /* For the following data structures with these keys being valid
    'default', 'current' or a URL from poetryURLs
@@ -114,12 +115,10 @@ function PoemView() {
   });
 
   function setAuthor(author: Author) {
-    console.log("setAuthor called", {author});
     setAuthorInner(author);
   }
 
   function setToast(arg: any) {
-    console.log("setToast called", {arg});
     setToastInner(arg);
   }
 
@@ -186,33 +185,41 @@ function PoemView() {
       - Finally, sets the new author state to the modified clone
     */
   const authorUpdater: AuthorUpdatorType =
-  (func: AuthorCloneUpdatorType, args?: any[]) => {
-    var clone = R.clone(author); // deep copy for modification and resetting
-    func(clone, ...(args ?? []));
-    setAuthor(clone);
-  }
+    (func: AuthorCloneUpdatorType, args?: any[]) => {
+      var clone = R.clone(author); // deep copy for modification and resetting
+      func(clone, ...(args ?? []));
+      setAuthor(clone);
+    }
 
   const authorApplyWordFunc: AuthorCloneApplyWordFuncType =
-  (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
-    func(clone, line, word);
-    setAuthor(clone);
-  }
+    (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
+      func(clone, line, word);
+      setAuthor(clone);
+    }
 
-  // Initial useEffect hook tries to fetch poems from URLs
-  useEffect(() => {
-    async function fetchPoems(url: string) {
-      const authorURL = url + "/author";
+    /* STOPPED_HERE: fix this by using useQuery properly ... oh, maybe this can only be done up in the component that calls useQuery
+       new branch to remove concurrent url fetching
 
-      // STOPPED_HERE: fix this by using useQuery properly ... oh, maybe this can only be done up in the component that calls useQuery
+       New Plan:
+       1. ✅ Restore promise.all code
+       2. Remove the progress bar code
+       3. Stop adding code improvements
+       4. Minimally spruce up the UI
 
-      const { data, isLoading, isError, error } = useQuery([`authors:${authorURL}`], () =>
-        axios.get(authorURL)
-      );  
+       Old Plan:
+       1. ✅ need to use promise.all again
+       2. simplify the progress bar code
+       3. write to local storage
+       4. ask to write all data to a file
+       5. Maybe create my own server (django?) to serve the data in a format consumable by react-query
+     */
 
+    useEffect(() => {
+        async function fetchPoems(url: PoetryURL) {
+            const authorURL = url + "/author";
       let response = await fetch(authorURL);
       const authorJSON = await response.json();
-
-      const numAuthors = authorNames.current.length;
+      const numAuthors = authorNames["current"].length;
       let countAuthors = 0;
 
       authorNames[url] = authorJSON.authors;
@@ -220,36 +227,39 @@ function PoemView() {
         throw `No authors found at ${authorURL}`;
       }
 
+      toastAlert(`Fetching ${authorNames[url]?.length} authors from ${url} ...`, "info");
+
+      // const firstAuthor = authorNames[url]![0];
+      // if (fetchedAuthorData.current[firstAuthor] === undefined) {
+      //   setHighestRankFetchedPoem()
+      // }
+
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
-        console.log({authorName})
-        let poemsByAuthorURL = `${url}/author/${encodeURIComponent(authorName.trim())}`;
-        authorMultiProgress[url] = authorMultiProgress[url] === undefined ?
-          { authorName, percentage: 0 } :
-          { authorName, percentage: 100 * (++countAuthors / numAuthors) };        
+        let poemsByAuthorURL = `${url}/author/${encodeURIComponent(
+          authorName.trim()
+        )}`;
 
         response = await fetch(poemsByAuthorURL);
-        let fetchedPoemsInitial : PoemData[] = await response.json();
+        let fetchedPoemsInitial = await response.json();
+
+        titlesByAuthor.current[authorName] = [] // reset titlesByAuthor
 
         // Add catetorized data to titlesByAuthor and fetchedAuthorData
         const titleInfo = titlesByAuthor as NestedContainer; // for brevity
         const authorInfo = fetchedAuthorData as unknown as NestedContainer; // for brevity
-        for (let poem of fetchedPoemsInitial) {
+        for (let poem of fetchedPoemsInitial!) {
           inpendNestedKeys(titleInfo, url, authorName, poem.title);
           const newPoemData: PoemData = { title: poem.title, lines: poem.lines };
           inpendNestedKeys(authorInfo, url, authorName, newPoemData);
         }
       }
     }
-    
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
       try {
         return await fetchPoems(url);
       } catch (error: any) {
         const msg = 'message' in error ? error.message : "Unknown error";
-
-        console.log(`Error fetching poems from ${url}: ${msg}`) // debug
-
         return toastAlert(`${msg}: ${url}`, "error");
       }
     });
@@ -261,6 +271,9 @@ function PoemView() {
     const authorName: AuthorName = author.name;
     const title = author.stagedTitleChange;
 
+    if (fetchedAuthorData.current[authorName] === undefined) {
+      return; // not ready yet
+    }
     const newLines: Line[] = getLines(fetchedAuthorData.current[authorName], title);
 
     authorUpdater((clone: AuthorClone) => {
@@ -271,6 +284,9 @@ function PoemView() {
   // When the author name changes, set the current title to the first one fetched
   useEffect(() => {
     const authorName = author.name;
+    if (fetchedAuthorData.current[authorName] === undefined) {
+      return; // not ready yet
+    }
     const newTitle = titlesByAuthor.current?.[authorName]?.[0];
     const newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
 
@@ -295,7 +311,7 @@ function PoemView() {
           )}
         </Grid>
         <Grid item xs={6}>
-          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc, parser }}/>
+          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc, parser }} />
         </Grid>
       </Grid>
       <SnackbarAlerts {...{ ...toast, setSnackOpen }} />

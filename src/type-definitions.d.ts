@@ -67,6 +67,7 @@ type ClickEvent = React.MouseEvent
 
 type ChangeEvent = React.ChangeEvent
 
+type URL = z.infer<typeof schemas.url>
 type PoetryURL = z.infer<typeof schemas.poetryURL>
 type AuthorMultiProgressType = z.infer<typeof schemas.authorMultiProgress>
 
