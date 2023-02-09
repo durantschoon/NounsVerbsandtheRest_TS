@@ -196,11 +196,12 @@ function PoemView() {
     /* STOPPED_HERE: 
        New Plan:
        1. ✅ Restore promise.all code
-       2. ✅ Remove the progress bar code       
+       2. ✅ Remove the progress bar code
        3. Last-ish fix: text should behave when parser is changed
-       4. Consider writing to local storage
-       5. Stop adding code improvements
-       6. Minimally spruce up the UI
+       4. Consider: Stats should be sticky at bottom of page
+       5. Consider: writing-to/reading-from local storage
+       6. Stop adding code improvements
+       7. Minimally spruce up the UI
      */
 
     useEffect(() => {
