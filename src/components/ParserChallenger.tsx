@@ -83,6 +83,7 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
     }
   }
 
+  // the poem with tagged nouns is in the text-output div
   return (
     <>
       <ParserSelector
