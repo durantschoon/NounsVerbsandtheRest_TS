@@ -38,7 +38,6 @@ function ParserSelector({authorUpdater, parserName} : Props) {
             aria-labelledby="parsers-radio-buttons-group-label"
             defaultValue={defaultParser.name}
             name="parserName"
-            /* value={defaultParser.name} */
             value={parserName}
             onChange={handleParserChange}
           >
