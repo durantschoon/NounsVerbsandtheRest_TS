@@ -1,73 +1,77 @@
 :root {
-    --hmargin: 20px;
+  --hmargin: 20px;
 }
 
 textarea {
-    height: 24rem;
+  height: 24rem;
 }
 
 #text-output {
-    border: 1px solid #000;
+  border: 1px solid #000;
 }
 
-textarea, #text-output, #stats-fieldset, legend {
-    min-width: 400px;
-    padding: 4px;
-    margin-left: var(--hmargin);
-    width: calc(100% - 2 * var(--hmargin));
-    background-color: floralwhite;
+textarea,
+#text-output,
+#stats-fieldset,
+legend {
+  min-width: 400px;
+  padding: 4px;
+  margin-left: var(--hmargin);
+  width: calc(100% - 2 * var(--hmargin));
+  background-color: floralwhite;
 }
 
-textarea, #text-output {
-    font-family: 'Xanh Mono', monospace;
-    font-size: 1.2rem;
-    border: 2px solid #000;
-    border-radius: 6px;
+textarea,
+#text-output {
+  font-family: "Xanh Mono", monospace;
+  font-size: 1.2rem;
+  border: 2px solid #000;
+  border-radius: 6px;
 
-    user-select: none;
-    
-    box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
-    -webkit-box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
-    -moz-box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
+  user-select: none;
+
+  box-shadow: 10px 10px 5px -3px rgba(146, 146, 146, 1);
+  -webkit-box-shadow: 10px 10px 5px -3px rgba(146, 146, 146, 1);
+  -moz-box-shadow: 10px 10px 5px -3px rgba(146, 146, 146, 1);
 }
 
 #stats-fieldset {
-    margin-top: 0.5rem;
-    position: sticky;
-    bottom: 0;
-    margin-left: 10%;
-    width: 80%;
-    padding-left: 0.8rem;
-    border-radius: 6px;
+  margin-top: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  margin-left: 10%;
+  width: 80%;
+  padding-left: 0.8rem;
+  border-radius: 6px;
 }
 
 #stats-legend {
-    max-width: 5rem;
-    border: 1px solid lightgray;
-    border-radius: 6px;
+  max-width: 5rem;
+  border: 1px solid lightgray;
+  border-radius: 6px;
 }
 
 .noun {
-    border: 1px solid orange;
-    padding: 1px 3px;
-    background-color: lightyellow;
-    cursor: alias;
+  border: 1px solid orange;
+  padding: 1px 3px;
+  background-color: lightyellow;
+  cursor: alias;
 }
 
 #noun-cursor-img {
-    content: url("../images/cursor_back.png");
-    width: 20px;
+  content: url("../images/cursor_back.png");
+  width: 20px;
 }
 
 #non-noun-cursor-img {
-    content: url("../images/cursor_plus.png");
-    width: 20px;
+  content: url("../images/cursor_plus.png");
+  width: 20px;
 }
 
 .non-noun {
-    cursor: cell;
+  cursor: cell;
 }
 
 .inverted {
-    border: red 2px dashed;
+  border: red 2px dashed;
 }

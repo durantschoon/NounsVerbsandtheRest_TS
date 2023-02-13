@@ -5,7 +5,7 @@ var NounInverter_1 = require("./NounInverter");
 var Parser_1 = require("./Parser");
 var Poem_1 = require("./Poem");
 var sonnets_1 = require("../data/sonnets");
-var Author = /** @class */ (function() {
+var Author = /** @class */ (function () {
   function Author(data) {
     Object.defineProperty(this, "name", {
       enumerable: true,
@@ -71,7 +71,7 @@ var Author = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function() {
+    value: function () {
       this.nounInverter = this.nounInverterFactory.get(this);
       this.nounInverter.recomputeNounOutlines();
     },
@@ -80,7 +80,7 @@ var Author = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(newPoem) {
+    value: function (newPoem) {
       this.currentPoem = newPoem;
       this.recomputeNounOutlines();
     },
@@ -89,7 +89,7 @@ var Author = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(newParser) {
+    value: function (newParser) {
       this.currentParser = newParser;
       this.recomputeNounOutlines();
     },
@@ -98,7 +98,7 @@ var Author = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(_a) {
+    value: function (_a) {
       var falsePos = _a.falsePos,
         falseNeg = _a.falseNeg;
       var nounInverter = this.nounInverter;

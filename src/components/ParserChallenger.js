@@ -1,10 +1,10 @@
 "use strict";
 var __assign =
   (this && this.__assign) ||
-  function() {
+  function () {
     __assign =
       Object.assign ||
-      function(t) {
+      function (t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
           for (var p in s)
@@ -16,7 +16,7 @@ var __assign =
   };
 var __importDefault =
   (this && this.__importDefault) ||
-  function(mod) {
+  function (mod) {
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -32,7 +32,7 @@ function ParserChallenger(_a) {
   var _b = (0, react_1.useState)({ falsePos: 0, falseNeg: 0 }),
     stats = _b[0],
     setStats = _b[1];
-  var _drawNounOutlines = function(author) {
+  var _drawNounOutlines = function (author) {
     author.recomputeNounOutlines();
     /* These are the expected ways _drawNounOutlines will be called
     
@@ -58,7 +58,7 @@ function ParserChallenger(_a) {
     _addClickHandlersToSpans(author);
   };
   // TODO: verify this rewrite works
-  var drawNounOutlinesUpdater = function() {
+  var drawNounOutlinesUpdater = function () {
     return authorUpdater(_drawNounOutlines);
   };
   // changing the poem (lines) or parser will trigger redrawing of noun outlines
@@ -66,11 +66,11 @@ function ParserChallenger(_a) {
     author.currentPoem.title,
     author.currentParser.name,
   ]);
-  var _invertNoun = function(author, line, word) {
+  var _invertNoun = function (author, line, word) {
     author.nounInverter.flip(line, word);
     _drawNounOutlines(author);
   };
-  var applyInvertNouns = function(author, line, word) {
+  var applyInvertNouns = function (author, line, word) {
     return authorApplyWordFunc(author, _invertNoun, line, word);
   };
   // clicking on a word should also trigger redrawing of noun outlines
@@ -86,7 +86,7 @@ function ParserChallenger(_a) {
       for (var _a = 0, spans_1 = spans; _a < spans_1.length; _a++) {
         var span = spans_1[_a];
         // span.addEventListener("click", (event: ClickEvent) : void => {
-        span.addEventListener("click", function(event) {
+        span.addEventListener("click", function (event) {
           event.stopPropagation();
           var _a = event.target.id.split("_").slice(1),
             line = _a[0],

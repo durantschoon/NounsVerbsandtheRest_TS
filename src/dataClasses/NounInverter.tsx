@@ -4,14 +4,13 @@ import Author from "./Author";
 import { Line, NounInverterRep, Stats, Tags } from "src/type-definitions";
 import { Parser } from "./Parser";
 
-
 const spannedWord = (
-  mainClass: string, 
-  extraClasses: string, 
-  lineNum: number, 
-  wordNum: number, 
+  mainClass: string,
+  extraClasses: string,
+  lineNum: number,
+  wordNum: number,
   word: string
-  ) =>
+) =>
   `<span class="${mainClass} ${extraClasses}" id="word_${lineNum}_${wordNum}">${word}</span>`;
 
 const punct = /([.,\/#!$%\^&\*;:{}=\-_`~()']+)/gm;
@@ -35,7 +34,7 @@ export class NounInverter {
     this.parser = author.currentParser;
     const lines = (this.poemTextLines = author.currentPoem.lines);
 
-    this.stats = { falseNeg: 0, falsePos: 0 }
+    this.stats = { falseNeg: 0, falsePos: 0 };
     // nounInverters are represented by jagged arrays of arrays indexed by
     //    (line, word) internally represented as zero-based arrays
     //    but externally represented as one-based.
@@ -55,7 +54,7 @@ export class NounInverter {
 
   // line, word are 1-based
   setInverted(line: number, word: number, wordIsInverted: boolean) {
-    this.rep[line-1][word-1] = wordIsInverted;
+    this.rep[line - 1][word - 1] = wordIsInverted;
   }
 
   // line, word are 1-based
@@ -114,11 +113,12 @@ export class NounInverter {
         outlined.push("");
         return;
       }
-      const matchedSpacePunct = line
-        .match(spacePunct)
-        ?.map((s) => s.replace(/ /g, UNICODE_NBSP)) || [];
+      const matchedSpacePunct =
+        line.match(spacePunct)?.map((s) => s.replace(/ /g, UNICODE_NBSP)) || [];
 
-      let taggedWords = parser.tagWordsInLine(line.replaceAll(punct, "")) as unknown as Tags;
+      let taggedWords = parser.tagWordsInLine(
+        line.replaceAll(punct, "")
+      ) as unknown as Tags;
       this.initLineIfNeeded(lineNum, taggedWords.length);
 
       // even out the lengths of the two arrays for zipping

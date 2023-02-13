@@ -10,20 +10,23 @@ import {
   AuthorCloneUpdatorWithWordType,
   AuthorCloneApplyWordFuncType,
   AuthorUpdatorType,
-  Stats
+  Stats,
 } from "src/type-definitions";
 
 type Props = {
-  author: Author,
-  authorUpdater: AuthorUpdatorType,
-  authorApplyWordFunc: AuthorCloneApplyWordFuncType
-}
+  author: Author;
+  authorUpdater: AuthorUpdatorType;
+  authorApplyWordFunc: AuthorCloneApplyWordFuncType;
+};
 
-function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
+function ParserChallenger({
+  author,
+  authorUpdater,
+  authorApplyWordFunc,
+}: Props) {
   const [stats, setStats] = useState({ falsePos: 0, falseNeg: 0 } as Stats);
 
-  const _drawNounOutlines: AuthorCloneUpdatorType =
-  (author : AuthorClone) => {
+  const _drawNounOutlines: AuthorCloneUpdatorType = (author: AuthorClone) => {
     author.recomputeNounOutlines();
 
     /* These are the expected ways _drawNounOutlines will be called
@@ -49,7 +52,7 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
     // update the clone before binding it in the click handlers
     author.updateCurrentStats(stats);
     _addClickHandlersToSpans(author);
-  }
+  };
   // TODO: verify this rewrite works
   const drawNounOutlinesUpdater = () => authorUpdater(_drawNounOutlines);
 
@@ -59,17 +62,19 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
     author.currentParser.name,
   ]);
 
-  const _invertNoun : AuthorCloneUpdatorWithWordType =
-  (author: AuthorClone, line: number, word: number) => {
+  const _invertNoun: AuthorCloneUpdatorWithWordType = (
+    author: AuthorClone,
+    line: number,
+    word: number
+  ) => {
     author.nounInverter!.flip(line, word);
     _drawNounOutlines(author);
-  }
+  };
   const applyInvertNouns = (author: AuthorClone, line: number, word: number) =>
     authorApplyWordFunc(author, _invertNoun, line, word);
 
   // clicking on a word should also trigger redrawing of noun outlines
   function _addClickHandlersToSpans(author: AuthorClone) {
-
     // Side effect: Adds _initialized_inversion property to the target of the
     // event to prevent the click handler from being called more than once.
     const getWordsAndInvert = (event: any) => {
@@ -77,14 +82,18 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
       if (event.target._initialized_inversion === true) return;
       const [line, word] = event.target.id.split("_").slice(1);
       applyInvertNouns(author, +line, +word);
-      Object.defineProperty(event.target, "_initialized_inversion", { value: true });
-    } 
+      Object.defineProperty(event.target, "_initialized_inversion", {
+        value: true,
+      });
+    };
 
-    // Oddly, at some point long after this was working otherwise spans stopped 
-    // detecting clicks but only on the first load. Actually, they triggered 
-    // twice which just toggled them back to the original state. This is a hack 
+    // Oddly, at some point long after this was working otherwise spans stopped
+    // detecting clicks but only on the first load. Actually, they triggered
+    // twice which just toggled them back to the original state. This is a hack
     // to prevent that.
-    document.getElementById("text-output")?.addEventListener("click", getWordsAndInvert)
+    document
+      .getElementById("text-output")
+      ?.addEventListener("click", getWordsAndInvert);
 
     const classNames = ["noun", "non-noun"];
     for (let className of classNames) {
@@ -117,7 +126,7 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
       </ul>
       <div id="text-output"></div>
 
-      <WordStats {...{parserName: author.currentParser.name, stats}} />
+      <WordStats {...{ parserName: author.currentParser.name, stats }} />
     </>
   );
 }

@@ -5,7 +5,7 @@ interface WordStatsProps {
   stats: Stats;
 }
 
-function WordStats({ parserName, stats } : WordStatsProps) {
+function WordStats({ parserName, stats }: WordStatsProps) {
   return (
     <fieldset id="stats-fieldset">
       <legend id="stats-legend">

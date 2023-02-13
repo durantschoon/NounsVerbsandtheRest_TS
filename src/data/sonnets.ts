@@ -1,9 +1,16 @@
-import { AuthorName, Title, Line, PoemsByAuthor, TitlesByAuthor } from "src/type-definitions"
+import {
+  AuthorName,
+  Title,
+  Line,
+  PoemsByAuthor,
+  TitlesByAuthor,
+} from "src/type-definitions";
 
 const sonnets: PoemsByAuthor = {
-    "William Shakespeare": [{
-        title: "Sonnet 60",
-        lines: `Sonnet 60: Like As The Waves Make Towards The Pebbled Shore
+  "William Shakespeare": [
+    {
+      title: "Sonnet 60",
+      lines: `Sonnet 60: Like As The Waves Make Towards The Pebbled Shore
 
     Like as the waves make towards the pebbled shore,
     So do our minutes hasten to their end;
@@ -19,10 +26,12 @@ const sonnets: PoemsByAuthor = {
     And nothing stands but for his scythe to mow:
       And yet to times in hope, my verse shall stand
       Praising thy worth, despite his cruel hand.`.split("\n"),
-    }],
-    "Robert Frost": [{
-        title: "Acquainted With The Night", 
-        lines: `Acquainted With The Night
+    },
+  ],
+  "Robert Frost": [
+    {
+      title: "Acquainted With The Night",
+      lines: `Acquainted With The Night
 
     I have been one acquainted with the night.
     I have walked out in rain—and back in rain.
@@ -41,38 +50,39 @@ const sonnets: PoemsByAuthor = {
     One luminary clock against the sky
 
     Proclaimed the time was neither wrong nor right.
-    I have been one acquainted with the night.`.split("\n")
-    }]
-}
+    I have been one acquainted with the night.`.split("\n"),
+    },
+  ],
+};
 
 // the code below will automatically set variables for defaults
 
-let firstAuthorName: AuthorName | undefined
-let firstTitle: Title | undefined
-let firstTitles: Title[] | undefined
-let firstPoemLines: Line[] | undefined
+let firstAuthorName: AuthorName | undefined;
+let firstTitle: Title | undefined;
+let firstTitles: Title[] | undefined;
+let firstPoemLines: Line[] | undefined;
 
-let authorNames: AuthorName[] = []
-let titlesByAuthor: TitlesByAuthor = {}
+let authorNames: AuthorName[] = [];
+let titlesByAuthor: TitlesByAuthor = {};
 
 for (const [sAuthor, sonnetsByAuthor] of Object.entries(sonnets)) {
-    firstAuthorName = firstAuthorName ?? sAuthor
-    authorNames.push(sAuthor)
-    titlesByAuthor[sAuthor] = []
-    for (const {title, lines} of sonnetsByAuthor) {
-        firstTitle = firstTitle ?? title
-        titlesByAuthor[sAuthor].push(title)
-        firstPoemLines = firstPoemLines ?? lines
-    }
-    firstTitles = firstTitles ?? titlesByAuthor[firstAuthorName]
+  firstAuthorName = firstAuthorName ?? sAuthor;
+  authorNames.push(sAuthor);
+  titlesByAuthor[sAuthor] = [];
+  for (const { title, lines } of sonnetsByAuthor) {
+    firstTitle = firstTitle ?? title;
+    titlesByAuthor[sAuthor].push(title);
+    firstPoemLines = firstPoemLines ?? lines;
+  }
+  firstTitles = firstTitles ?? titlesByAuthor[firstAuthorName];
 }
 
-export const defaultAuthorName: AuthorName = firstAuthorName!
-export const defaultTitle: Title = firstTitle!
-export const defaultTitles: Title[] = firstTitles!
-export const defaultPoemLines: Line[] = firstPoemLines!
+export const defaultAuthorName: AuthorName = firstAuthorName!;
+export const defaultTitle: Title = firstTitle!;
+export const defaultTitles: Title[] = firstTitles!;
+export const defaultPoemLines: Line[] = firstPoemLines!;
 
-export const defaultAuthorNames = authorNames
-export const defaultTitlesByAuthor = titlesByAuthor
+export const defaultAuthorNames = authorNames;
+export const defaultTitlesByAuthor = titlesByAuthor;
 
-export default sonnets
+export default sonnets;

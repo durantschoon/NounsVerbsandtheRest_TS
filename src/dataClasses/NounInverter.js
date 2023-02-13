@@ -2,7 +2,7 @@
 var __createBinding =
   (this && this.__createBinding) ||
   (Object.create
-    ? function(o, m, k, k2) {
+    ? function (o, m, k, k2) {
         if (k2 === undefined) k2 = k;
         var desc = Object.getOwnPropertyDescriptor(m, k);
         if (
@@ -11,29 +11,29 @@ var __createBinding =
         ) {
           desc = {
             enumerable: true,
-            get: function() {
+            get: function () {
               return m[k];
             },
           };
         }
         Object.defineProperty(o, k2, desc);
       }
-    : function(o, m, k, k2) {
+    : function (o, m, k, k2) {
         if (k2 === undefined) k2 = k;
         o[k2] = m[k];
       });
 var __setModuleDefault =
   (this && this.__setModuleDefault) ||
   (Object.create
-    ? function(o, v) {
+    ? function (o, v) {
         Object.defineProperty(o, "default", { enumerable: true, value: v });
       }
-    : function(o, v) {
+    : function (o, v) {
         o["default"] = v;
       });
 var __importStar =
   (this && this.__importStar) ||
-  function(mod) {
+  function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null)
@@ -44,9 +44,12 @@ var __importStar =
     return result;
   };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NounInverterFactory = exports.nounInverterID = exports.NounInverter = void 0;
+exports.NounInverterFactory =
+  exports.nounInverterID =
+  exports.NounInverter =
+    void 0;
 var R = __importStar(require("ramda"));
-var spannedWord = function(mainClass, extraClasses, lineNum, wordNum, word) {
+var spannedWord = function (mainClass, extraClasses, lineNum, wordNum, word) {
   return '<span class="'
     .concat(mainClass, " ")
     .concat(extraClasses, '" id="word_')
@@ -64,7 +67,7 @@ var UNICODE_NBSP = "\u00A0";
   Records weather the user has inverted the value of a word in a poem (changed
   "noun" -> "non-noun" or vice-versa)
   */
-var NounInverter = /** @class */ (function() {
+var NounInverter = /** @class */ (function () {
   function NounInverter(author) {
     Object.defineProperty(this, "falsePositiveCount", {
       enumerable: true,
@@ -122,7 +125,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(line, word) {
+    value: function (line, word) {
       return this.rep[line - 1][word - 1];
     },
   });
@@ -131,7 +134,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(line, word, wordIsInverted) {
+    value: function (line, word, wordIsInverted) {
       this.rep[line - 1][word - 1] = wordIsInverted;
     },
   });
@@ -140,7 +143,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(line, word) {
+    value: function (line, word) {
       this.setInverted(line, word, !this.isInverted(line, word));
     },
   });
@@ -149,7 +152,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(lineNum, lineLength) {
+    value: function (lineNum, lineLength) {
       if (this.rep.length === 0) return;
       if (this.rep[lineNum - 1].length === 0) {
         this.rep[lineNum - 1] = new Array(lineLength).fill(false);
@@ -161,7 +164,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function() {
+    value: function () {
       var _this = this;
       var lines = this.poemTextLines;
       var parser = this.parser;
@@ -169,11 +172,11 @@ var NounInverter = /** @class */ (function() {
         return "";
       }
       var outlined = [];
-      var addNounSpans = function(tagged, lineNum) {
+      var addNounSpans = function (tagged, lineNum) {
         var mainClass;
         var extraClasses;
         var wordNum = 1; // 1-based
-        return tagged.map(function(_a) {
+        return tagged.map(function (_a) {
           var word = _a[0],
             tag = _a[1];
           extraClasses = "";
@@ -195,7 +198,7 @@ var NounInverter = /** @class */ (function() {
               - Recombine the spaces and words in the right order, save as outlined
               - mark the current NounInverter as cloneable now that initialization is complete
             */
-      lines.forEach(function(line, index) {
+      lines.forEach(function (line, index) {
         var _a;
         var lineNum = index + 1;
         if (line === "") {
@@ -205,7 +208,7 @@ var NounInverter = /** @class */ (function() {
         var matchedSpacePunct =
           ((_a = line.match(spacePunct)) === null || _a === void 0
             ? void 0
-            : _a.map(function(s) {
+            : _a.map(function (s) {
                 return s.replace(/ /g, UNICODE_NBSP);
               })) || [];
         var taggedWords = parser.tagWordsInLine(line.replaceAll(punct, ""));
@@ -235,7 +238,7 @@ var NounInverter = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function() {
+    value: function () {
       // Using getElementById here because the typical alternative seems far too
       // complicated: invoking useRef. We'd have to pass the ref through
       // authorData which contains the nounInverter. Note that the nounInverter
@@ -277,7 +280,7 @@ var memoCache = new Map();
   The factory returns the existing nounInverter if it already exists (in the
   memoCache) or creates a new one.
 */
-var NounInverterFactory = /** @class */ (function() {
+var NounInverterFactory = /** @class */ (function () {
   function NounInverterFactory(author) {
     Object.defineProperty(this, "inverter", {
       enumerable: true,
@@ -291,7 +294,7 @@ var NounInverterFactory = /** @class */ (function() {
     enumerable: false,
     configurable: true,
     writable: true,
-    value: function(author) {
+    value: function (author) {
       var id = nounInverterID(author);
       if (!memoCache.has(id)) {
         memoCache.set(id, new NounInverter(author));

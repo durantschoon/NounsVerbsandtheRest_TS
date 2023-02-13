@@ -13,7 +13,7 @@ class Parser {
 }
 
 class PartsOfSpeech extends Parser {
-  info: { title: string; body: string; link: string; };
+  info: { title: string; body: string; link: string };
   constructor() {
     super("parts-of-speech");
     this.info = {
@@ -30,7 +30,7 @@ class PartsOfSpeech extends Parser {
 }
 
 class EnPos extends Parser {
-  info: { title: string; body: string; link: string; };
+  info: { title: string; body: string; link: string };
   constructor() {
     super("en-pos");
     this.info = {

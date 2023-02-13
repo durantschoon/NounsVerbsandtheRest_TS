@@ -24,7 +24,7 @@ import {
   PoemData,
   PoetryURL,
   Toast,
-  AuthorData
+  AuthorData,
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -45,7 +45,7 @@ import "./PoemView.css";
 // ]
 // debug values
 // const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
-const poetryURLs: PoetryURL[] = ["https://poetrydb.org"]
+const poetryURLs: PoetryURL[] = ["https://poetrydb.org"];
 
 /* For the following data structures with these keys being valid
    'default', 'current' or a URL from poetryURLs
@@ -54,38 +54,57 @@ const poetryURLs: PoetryURL[] = ["https://poetrydb.org"]
      See PoetryURLs for definition of "best"
   */
 
-type FetchedAuthorDataSemantic = { default: PoemsByAuthor, current: PoemsByAuthor }
-type FetchedAuthorDataURL = { [P in PoetryURL]?: PoemsByAuthor }
-type FetchedAuthorData = FetchedAuthorDataSemantic & FetchedAuthorDataURL
+type FetchedAuthorDataSemantic = {
+  default: PoemsByAuthor;
+  current: PoemsByAuthor;
+};
+type FetchedAuthorDataURL = { [P in PoetryURL]?: PoemsByAuthor };
+type FetchedAuthorData = FetchedAuthorDataSemantic & FetchedAuthorDataURL;
 
-const fetchedAuthorData: FetchedAuthorData = { default: sonnets, current: sonnets };
+const fetchedAuthorData: FetchedAuthorData = {
+  default: sonnets,
+  current: sonnets,
+};
 
-type FetchedAuthorNamesSemantic = { default: AuthorName[], current: AuthorName[] }
-type FetchedAuthorNamesURL = { [P in PoetryURL]?: AuthorName[] }
-type FetchedAuthorNames = FetchedAuthorNamesSemantic & FetchedAuthorNamesURL
+type FetchedAuthorNamesSemantic = {
+  default: AuthorName[];
+  current: AuthorName[];
+};
+type FetchedAuthorNamesURL = { [P in PoetryURL]?: AuthorName[] };
+type FetchedAuthorNames = FetchedAuthorNamesSemantic & FetchedAuthorNamesURL;
 
-let authorNames: FetchedAuthorNames = { default: defaultAuthorNames, current: defaultAuthorNames };
+let authorNames: FetchedAuthorNames = {
+  default: defaultAuthorNames,
+  current: defaultAuthorNames,
+};
 
-type AuthorTitles = { [author: string]: string[] }
-type FetchedTitlesByAuthorSemantic = { default: AuthorTitles, current: AuthorTitles }
-type FetchedTitlesByAuthorURL = { [P in PoetryURL]?: AuthorTitles }
-type FetchedTitlesByAuthor = FetchedTitlesByAuthorSemantic & FetchedTitlesByAuthorURL
+type AuthorTitles = { [author: string]: string[] };
+type FetchedTitlesByAuthorSemantic = {
+  default: AuthorTitles;
+  current: AuthorTitles;
+};
+type FetchedTitlesByAuthorURL = { [P in PoetryURL]?: AuthorTitles };
+type FetchedTitlesByAuthor = FetchedTitlesByAuthorSemantic &
+  FetchedTitlesByAuthorURL;
 
 let titlesByAuthorClone = R.clone(defaultTitlesByAuthor);
 let titlesByAuthor: FetchedTitlesByAuthor = {
   default: titlesByAuthorClone,
   current: titlesByAuthorClone,
-}
+};
 
 // two nested string keys access an array of any type
-type NestedContainer = { [key1: string]: { [key2: string]: any[] } }
+type NestedContainer = { [key1: string]: { [key2: string]: any[] } };
 
 // Think of inpendNestedKeys as hierarchically categorizing everything
 //   after the first arg into the first arg
 // Access key1 of container and either INitialize or apPEND value to key2's list
 function inpendNestedKeys(
   container: NestedContainer,
-  key1: string, key2: string, value: any) {
+  key1: string,
+  key2: string,
+  value: any
+) {
   if (container[key1] === undefined) {
     container[key1] = { [key2]: [value] }; // initialize1
   } else {
@@ -98,8 +117,10 @@ function inpendNestedKeys(
 }
 
 function getLines(poems: PoemData[], title: string): Line[] {
-  const poem: PoemData = poems.filter((poem: PoemData) => poem.title === title)[0];
-  return poem.lines
+  const poem: PoemData = poems.filter(
+    (poem: PoemData) => poem.title === title
+  )[0];
+  return poem.lines;
 }
 
 function PoemView() {
@@ -110,9 +131,11 @@ function PoemView() {
     message: "",
   });
 
-  const parser = defaultParser
+  const parser = defaultParser;
 
-  const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) => theme.breakpoints.up("xl"));
+  const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) =>
+    theme.breakpoints.up("xl")
+  );
 
   function setSnackOpen(openOrClosed: boolean) {
     setToast((prevToast: Toast) => ({ ...prevToast, open: openOrClosed }));
@@ -172,22 +195,28 @@ function PoemView() {
       - Applies (chained) func(s) to modify clone (with any args)
       - Finally, sets the new author state to the modified clone
     */
-  const authorUpdater: AuthorUpdatorType =
-    (func: AuthorCloneUpdatorType, args?: any[]) => {
-      var clone = R.clone(author); // deep copy for modification and resetting
-      func(clone, ...(args ?? []));
-      setAuthor(clone);
-    }
+  const authorUpdater: AuthorUpdatorType = (
+    func: AuthorCloneUpdatorType,
+    args?: any[]
+  ) => {
+    var clone = R.clone(author); // deep copy for modification and resetting
+    func(clone, ...(args ?? []));
+    setAuthor(clone);
+  };
 
-  const authorApplyWordFunc: AuthorCloneApplyWordFuncType =
-    (clone: AuthorClone, func: AuthorCloneUpdatorWithWordType, line: number, word: number) => {
-      func(clone, line, word);
-      setAuthor(clone);
-    }
+  const authorApplyWordFunc: AuthorCloneApplyWordFuncType = (
+    clone: AuthorClone,
+    func: AuthorCloneUpdatorWithWordType,
+    line: number,
+    word: number
+  ) => {
+    func(clone, line, word);
+    setAuthor(clone);
+  };
 
-    useEffect(() => {
-        async function fetchPoems(url: PoetryURL) {
-            const authorURL = url + "/author";
+  useEffect(() => {
+    async function fetchPoems(url: PoetryURL) {
+      const authorURL = url + "/author";
       let response = await fetch(authorURL);
       const authorJSON = await response.json();
       const numAuthors = authorNames["current"].length;
@@ -198,7 +227,10 @@ function PoemView() {
         throw `No authors found at ${authorURL}`;
       }
 
-      toastAlert(`Fetching ${authorNames[url]?.length} authors from ${url} ...`, "info");
+      toastAlert(
+        `Fetching ${authorNames[url]?.length} authors from ${url} ...`,
+        "info"
+      );
 
       // const firstAuthor = authorNames[url]![0];
       // if (fetchedAuthorData.current[firstAuthor] === undefined) {
@@ -214,14 +246,17 @@ function PoemView() {
         response = await fetch(poemsByAuthorURL);
         let fetchedPoemsInitial = await response.json();
 
-        titlesByAuthor.current[authorName] = [] // reset titlesByAuthor
+        titlesByAuthor.current[authorName] = []; // reset titlesByAuthor
 
         // Add catetorized data to titlesByAuthor and fetchedAuthorData
         const titleInfo = titlesByAuthor as NestedContainer; // for brevity
         const authorInfo = fetchedAuthorData as unknown as NestedContainer; // for brevity
         for (let poem of fetchedPoemsInitial!) {
           inpendNestedKeys(titleInfo, url, authorName, poem.title);
-          const newPoemData: PoemData = { title: poem.title, lines: poem.lines };
+          const newPoemData: PoemData = {
+            title: poem.title,
+            lines: poem.lines,
+          };
           inpendNestedKeys(authorInfo, url, authorName, newPoemData);
         }
       }
@@ -230,7 +265,7 @@ function PoemView() {
       try {
         return await fetchPoems(url);
       } catch (error: any) {
-        const msg = 'message' in error ? error.message : "Unknown error";
+        const msg = "message" in error ? error.message : "Unknown error";
         return toastAlert(`${msg}: ${url}`, "error");
       }
     });
@@ -245,7 +280,10 @@ function PoemView() {
     if (fetchedAuthorData.current[authorName] === undefined) {
       return; // not ready yet
     }
-    const newLines: Line[] = getLines(fetchedAuthorData.current[authorName], title);
+    const newLines: Line[] = getLines(
+      fetchedAuthorData.current[authorName],
+      title
+    );
 
     authorUpdater((clone: AuthorClone) => {
       clone.setPoem(new Poem(authorName, title, newLines));
@@ -282,7 +320,9 @@ function PoemView() {
           )}
         </Grid>
         <Grid item xs={6}>
-          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc }} />
+          <ParserChallenger
+            {...{ author, authorUpdater, authorApplyWordFunc }}
+          />
         </Grid>
       </Grid>
       <SnackbarAlerts {...{ ...toast, setSnackOpen }} />

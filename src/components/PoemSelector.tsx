@@ -6,9 +6,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
 import Author from "../dataClasses/Author";
-import { 
-  AuthorName, 
-  AuthorClone, 
+import {
+  AuthorName,
+  AuthorClone,
   AuthorUpdatorType,
   PoetryURL,
 } from "src/type-definitions";
@@ -19,10 +19,11 @@ function capitalizeFirstLetter(s: string) {
 
 // generic selector used for authors and titles
 function selector(
-  selName: string, 
-  value: string, 
-  setter: (s: string) => void, 
-  valList: string[]) {
+  selName: string,
+  value: string,
+  setter: (s: string) => void,
+  valList: string[]
+) {
   let menuKey = 0;
   return (
     <FormControl margin="dense">
@@ -47,9 +48,9 @@ function selector(
 }
 
 type Props = {
-  author: Author, 
-  authorUpdater: AuthorUpdatorType, 
-}
+  author: Author;
+  authorUpdater: AuthorUpdatorType;
+};
 
 function PoemSelector({ author, authorUpdater }: Props) {
   function authorSelector() {

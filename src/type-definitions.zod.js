@@ -1,11 +1,29 @@
 "use strict";
 var __importDefault =
   (this && this.__importDefault) ||
-  function(mod) {
+  function (mod) {
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadingProgress = exports.parserMap = exports.tags = exports.authorMethod = exports.authorData = exports.nounInverter = exports.nounInverterRep = exports.parser = exports.stats = exports.falseNegativeCount = exports.falsePositiveCount = exports.titlesByAuthor = exports.poemsByAuthor = exports.poem = exports.poemData = exports.line = exports.title = exports.authorName = void 0;
+exports.loadingProgress =
+  exports.parserMap =
+  exports.tags =
+  exports.authorMethod =
+  exports.authorData =
+  exports.nounInverter =
+  exports.nounInverterRep =
+  exports.parser =
+  exports.stats =
+  exports.falseNegativeCount =
+  exports.falsePositiveCount =
+  exports.titlesByAuthor =
+  exports.poemsByAuthor =
+  exports.poem =
+  exports.poemData =
+  exports.line =
+  exports.title =
+  exports.authorName =
+    void 0;
 var zod_1 = require("zod");
 var Parser_1 = require("./dataClasses/Parser");
 var Poem_1 = __importDefault(require("./dataClasses/Poem"));
@@ -22,10 +40,10 @@ exports.titlesByAuthor = zod_1.z.record(
   zod_1.z.array(exports.title)
 );
 exports.falsePositiveCount = zod_1.z.number().refine(
-  function(val) {
+  function (val) {
     return val >= 0;
   },
-  function(val) {
+  function (val) {
     return {
       message: "False Positive ".concat(
         val,
@@ -35,10 +53,10 @@ exports.falsePositiveCount = zod_1.z.number().refine(
   }
 );
 exports.falseNegativeCount = zod_1.z.number().refine(
-  function(val) {
+  function (val) {
     return val >= 0;
   },
-  function(val) {
+  function (val) {
     return {
       message: "False Negative ".concat(
         val,
@@ -92,7 +110,7 @@ exports.parserMap = zod_1.z.record(
   zod_1.z.instanceof(Parser_1.Parser)
 );
 // Loading
-var percentage = zod_1.z.number().refine(function(val) {
+var percentage = zod_1.z.number().refine(function (val) {
   return val >= 0 && val <= 100;
 });
 exports.loadingProgress = zod_1.z.object({

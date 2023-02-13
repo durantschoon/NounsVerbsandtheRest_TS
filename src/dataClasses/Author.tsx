@@ -24,7 +24,7 @@ export default class Author {
   constructor(data: AuthorData) {
     // TS does not allow Object.assign by itself
     //   because it cannot be certain currentPoem is set
-    // Object.assign(this, data); 
+    // Object.assign(this, data);
     this.name = data.name;
     this.titles = data.titles;
     this.authorNames = data.authorNames;
@@ -34,12 +34,12 @@ export default class Author {
     this.stagedTitleChange = this.currentPoem.title;
     this.recomputeNounOutlines();
   }
-  
+
   recomputeNounOutlines(this: Author) {
     this.nounInverter = this.nounInverterFactory.get(this);
     this.nounInverter!.recomputeNounOutlines();
   }
-  
+
   setPoem(this: Author, newPoem: Poem) {
     this.currentPoem = newPoem;
     this.recomputeNounOutlines!();
@@ -50,13 +50,13 @@ export default class Author {
     this.recomputeNounOutlines!();
   }
 
-  updateCurrentStats(this: Author,  stats: Stats) {
+  updateCurrentStats(this: Author, stats: Stats) {
     const nounInverter = this.nounInverter;
     if (nounInverter) {
       nounInverter.stats = stats;
     }
   }
-};
+}
 
 export const defaultAuthor = new Author({
   name: defaultAuthorName,

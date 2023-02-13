@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -38,23 +37,23 @@ const theme = createTheme({
 const queryClient = new QueryClient();
 
 export default function App() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={theme}>
-                <Box sx={{ flexGrow: 1 }}>
-                    <AppBar position="static">
-                        <Toolbar>
-                            <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                                Nouns, Verbs and the Rest
-                            </Typography>
-                        </Toolbar>
-                    </AppBar>
-                    <Box sx={{ flexGrow: 1 }}>
-                        <PoemView />
-                    </Box>
-                </Box>
-            </ThemeProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-    );
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                Nouns, Verbs and the Rest
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Box sx={{ flexGrow: 1 }}>
+            <PoemView />
+          </Box>
+        </Box>
+      </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 }

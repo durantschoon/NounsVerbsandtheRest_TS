@@ -1,15 +1,15 @@
-import {PoS, EnP} from '../dataClasses/Parser'
-import Tooltipped from './ToolTipped'
+import { PoS, EnP } from "../dataClasses/Parser";
+import Tooltipped from "./ToolTipped";
 
 import "./ParserDescriptions.css";
 
 function ParserDescriptions() {
-    return (
-        <div id="parser-descriptions">
-          <Tooltipped {...PoS.info} />
-          <Tooltipped {...EnP.info} />
-        </div>
-    )
+  return (
+    <div id="parser-descriptions">
+      <Tooltipped {...PoS.info} />
+      <Tooltipped {...EnP.info} />
+    </div>
+  );
 }
 
-export default ParserDescriptions
+export default ParserDescriptions;
