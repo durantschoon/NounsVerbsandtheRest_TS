@@ -33,11 +33,16 @@ textarea, #text-output {
     margin-top: 0.5rem;
     position: sticky;
     bottom: 0;
+    margin-left: 10%;
+    width: 80%;
+    padding-left: 0.8rem;
+    border-radius: 6px;
 }
 
 #stats-legend {
     max-width: 5rem;
     border: 1px solid lightgray;
+    border-radius: 6px;
 }
 
 .noun {
