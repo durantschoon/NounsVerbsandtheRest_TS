@@ -88,7 +88,7 @@ export class NounInverter {
 
       return tagged.map(([word, tag]) => {
         extraClasses = "";
-        let nounTest = tag === "NN" || tag === "NNS";
+        let nounTest: boolean = tag === "NN" || tag === "NNS";
         if (this.isInverted(lineNum, wordNum)) {
           nounTest = !nounTest;
           extraClasses = "inverted";
