@@ -1,8 +1,6 @@
 import { Tagger, Lexer } from "parts-of-speech";
 import { Tag } from "en-pos";
 
-import * as R from "ramda";
-
 import { Line, ParsersByName } from "src/type-definitions";
 class Parser {
   name: string;
@@ -42,11 +40,11 @@ class EnPos extends Parser {
     };
   }
   tagWordsInLine(line: string) {
-    const lines = R.filter(R.identity, line.split(/\s/));
-    var tags = new Tag(lines)
+    const words = line.split(/\s/).filter(Boolean); // remove falsey values
+    var tags = new Tag(words)
       .initial() // initial dictionary and pattern based tagging
       .smooth().tags; // further context based smoothing
-    const tagged = tags.map((tag, i) => [line[i], tag]);
+    const tagged = tags.map((tag, i) => [words[i], tag]);
     return tagged;
   }
 }
