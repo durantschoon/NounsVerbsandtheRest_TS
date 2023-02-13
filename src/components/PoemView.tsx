@@ -103,20 +103,12 @@ function getLines(poems: PoemData[], title: string): Line[] {
 }
 
 function PoemView() {
-  const [author, setAuthorInner] = useState(defaultAuthor as Author);
-  const [toast, setToastInner] = useState({
+  const [author, setAuthor] = useState(defaultAuthor as Author);
+  const [toast, setToast] = useState({
     open: false,
     severity: "info",
     message: "",
   });
-
-  function setAuthor(author: Author) {
-    setAuthorInner(author);
-  }
-
-  function setToast(arg: any) {
-    setToastInner(arg);
-  }
 
   const parser = defaultParser
 
