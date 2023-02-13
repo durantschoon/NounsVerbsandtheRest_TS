@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as R from "ramda";
 
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-
 import { Grid, Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
