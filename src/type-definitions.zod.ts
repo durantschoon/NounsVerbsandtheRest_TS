@@ -82,6 +82,8 @@ export const poetryURL = url;
 
 export const toast = z.object({ 
     message: z.string(), 
-    severity: z.union([z.literal("error"), z.literal("warning"), z.literal("info"), z.literal("success")]),
+    // this union is better in some sense, but it's too strict to work with the toastify library
+    // severity: z.union([z.literal("error"), z.literal("warning"), z.literal("info"), z.literal("success")]),
+    severity: z.string(),
     open: z.boolean() 
 });
