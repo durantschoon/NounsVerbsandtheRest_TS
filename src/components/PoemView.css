@@ -23,6 +23,8 @@ textarea, #text-output {
     font-size: 1.2rem;
     border: 2px solid #000;
     border-radius: 6px;
+
+    user-select: none;
     
     box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
     -webkit-box-shadow: 10px 10px 5px -3px rgba(146,146,146,1);
