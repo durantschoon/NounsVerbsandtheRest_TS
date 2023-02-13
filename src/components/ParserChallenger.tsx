@@ -4,9 +4,9 @@ import Author from "../dataClasses/Author";
 import ParserSelector from "./ParserSelector";
 import WordStats from "./WordStats";
 
-import { 
-  AuthorClone, 
-  AuthorCloneUpdatorType, 
+import {
+  AuthorClone,
+  AuthorCloneUpdatorType,
   AuthorCloneUpdatorWithWordType,
   AuthorCloneApplyWordFuncType,
   AuthorUpdatorType,
@@ -22,7 +22,7 @@ type Props = {
 function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
   const [stats, setStats] = useState({ falsePos: 0, falseNeg: 0 } as Stats);
 
-  const _drawNounOutlines: AuthorCloneUpdatorType = 
+  const _drawNounOutlines: AuthorCloneUpdatorType =
   (author : AuthorClone) => {
     author.recomputeNounOutlines();
 
@@ -59,7 +59,7 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
     author.currentParser.name,
   ]);
 
-  const _invertNoun : AuthorCloneUpdatorWithWordType = 
+  const _invertNoun : AuthorCloneUpdatorWithWordType =
   (author: AuthorClone, line: number, word: number) => {
     author.nounInverter!.flip(line, word);
     _drawNounOutlines(author);
