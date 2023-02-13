@@ -1,4 +1,3 @@
-// import PropTypes from 'prop-types';
 import React, { useState, useEffect } from "react";
 import * as R from "ramda";
 
@@ -231,11 +230,6 @@ function PoemView() {
         `Fetching ${authorNames[url]?.length} authors from ${url} ...`,
         "info"
       );
-
-      // const firstAuthor = authorNames[url]![0];
-      // if (fetchedAuthorData.current[firstAuthor] === undefined) {
-      //   setHighestRankFetchedPoem()
-      // }
 
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
