@@ -282,7 +282,7 @@ function PoemView() {
           )}
         </Grid>
         <Grid item xs={6}>
-          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc, parser }} />
+          <ParserChallenger {...{ author, authorUpdater, authorApplyWordFunc }} />
         </Grid>
       </Grid>
       <SnackbarAlerts {...{ ...toast, setSnackOpen }} />

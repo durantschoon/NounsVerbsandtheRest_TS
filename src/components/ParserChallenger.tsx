@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Author from "../dataClasses/Author";
 import ParserSelector from "./ParserSelector";
 import WordStats from "./WordStats";
-import { Parser } from "../dataClasses/Parser";
 
 import { 
   AuthorClone, 
@@ -18,10 +17,9 @@ type Props = {
   author: Author,
   authorUpdater: AuthorUpdatorType,
   authorApplyWordFunc: AuthorCloneApplyWordFuncType
-  parser: Parser,
 }
 
-function ParserChallenger({author, authorUpdater, authorApplyWordFunc, parser}: Props) {
+function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
   const [stats, setStats] = useState({ falsePos: 0, falseNeg: 0 } as Stats);
 
   const _drawNounOutlines: AuthorCloneUpdatorType = 
@@ -106,7 +104,7 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc, parser}: 
       </ul>
       <div id="text-output"></div>
 
-      <WordStats {...{parserName: parser.name, stats}} />
+      <WordStats {...{parserName: author.currentParser.name, stats}} />
     </>
   );
 }
