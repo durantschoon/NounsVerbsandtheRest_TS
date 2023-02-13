@@ -69,16 +69,28 @@ function ParserChallenger({author, authorUpdater, authorApplyWordFunc}: Props) {
 
   // clicking on a word should also trigger redrawing of noun outlines
   function _addClickHandlersToSpans(author: AuthorClone) {
+
+    // Side effect: Adds _initialized_inversion property to the target of the
+    // event to prevent the click handler from being called more than once.
+    const getWordsAndInvert = (event: any) => {
+      event.stopPropagation();
+      if (event.target._initialized_inversion === true) return;
+      const [line, word] = event.target.id.split("_").slice(1);
+      applyInvertNouns(author, +line, +word);
+      Object.defineProperty(event.target, "_initialized_inversion", { value: true });
+    } 
+
+    // Oddly, at some point long after this was working otherwise spans stopped 
+    // detecting clicks but only on the first load. Actually, they triggered 
+    // twice which just toggled them back to the original state. This is a hack 
+    // to prevent that.
+    document.getElementById("text-output")?.addEventListener("click", getWordsAndInvert)
+
     const classNames = ["noun", "non-noun"];
     for (let className of classNames) {
       const spans = Array.from(document.getElementsByClassName(className));
       for (let span of spans) {
-        // span.addEventListener("click", (event: ClickEvent) : void => {
-        span.addEventListener("click", (event: any) : void => {
-          event.stopPropagation();
-          const [line, word] = event.target.id.split("_").slice(1);
-          applyInvertNouns(author, +line, +word);
-        });
+        span.addEventListener("click", getWordsAndInvert);
       }
     }
   }
