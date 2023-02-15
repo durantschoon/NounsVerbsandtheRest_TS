@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Colors from 'material-ui-colors';
+import * as Colors from "material-ui-colors";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -27,8 +27,8 @@ const theme = createTheme({
       styleOverrides: {
         colorPrimary: {
           color: "#f6e9fc", // App.css var(--color-secondary)
-        }
-      }
+        },
+      },
     },
     MuiFormControl: {
       styleOverrides: {
