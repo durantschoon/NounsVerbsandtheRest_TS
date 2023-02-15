@@ -55,7 +55,7 @@ I stopped around Valentine's Day 2023 (hence the sort-of Valentine's Day theme).
 ## Notes
 
 ​
-- This started out as a vite-mui javascript project on stackblitz. I converted it to typescript by hand.
+- This started out as a vite-mui javascript project on stackblitz. I converted it to typescript by hand and used zod (for further typing) as well.
 
 - This has no tests (but I definitely plan to start with tests and try TDD on my next practice project)
 
