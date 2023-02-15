@@ -17,18 +17,32 @@ Running `npm install` first by itself seemed to work if I then followed it with 
 and caches the results in local storage 
 (fetches on load if the list of author names changes)
 
+![NVR_using_cache](https://user-images.githubusercontent.com/12535192/219119332-154f5935-3f47-48f0-ac45-7dfaebb5ab5a.png)
+
 
 ## Choose a Poet from the drop down menu
 
+![NVR_choose_poet](https://user-images.githubusercontent.com/12535192/219119366-6ac82a14-b24b-44de-98f0-bb7ce826996a.png)
+
+
 ## Choose a Poem from the drop down menu
+
+![NVR_choose_poem](https://user-images.githubusercontent.com/12535192/219119444-5ec99d01-bd78-4385-a076-662027efbbbe.png)
+
 
 ## Choose a Parser (parts-of-speech)
 
 Manually challenge the parsers choices (for what is a noun) by clicking on the words in the right box. View live statistics for false positives (red circles) and false negatives (blue rectangles).
 
+![NVR_pos](https://user-images.githubusercontent.com/12535192/219119487-fd7906e9-f604-4e1b-955f-165c31ce9980.png)
+
+
 ## Choose a different Parser (en-pos)
 
 Again manually challenge the parser choices and switch back and forth between parser results by clicking on the parser name radio buttons (top magenta box)
+
+![NVR_en](https://user-images.githubusercontent.com/12535192/219119530-34651dc3-5fa6-4331-bae0-1c10510e9f3f.png)
+
 
 # What is this?
 
