@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { compress, decompress } from "lz-string";
 import * as R from "ramda";
 
 import { Grid, Theme } from "@mui/material";
@@ -19,8 +20,8 @@ import {
   PoemsByAuthor,
   PoemData,
   PoetryURL,
+  TitlesByAuthor,
   Toast,
-  AuthorData,
 } from "src/type-definitions";
 
 import Author, { defaultAuthor } from "../dataClasses/Author";
@@ -89,6 +90,8 @@ let titlesByAuthor: FetchedTitlesByAuthor = {
   current: titlesByAuthorClone,
 };
 
+type Compressible = FetchedAuthorData | FetchedTitlesByAuthor;
+
 // two nested string keys access an array of any type
 type NestedContainer = { [key1: string]: { [key2: string]: any[] } };
 
@@ -147,7 +150,10 @@ function PoemView() {
     */
   function setHighestRankFetchedPoem() {
     for (let url of poetryURLs) {
-      if (fetchedAuthorData[url] === undefined) {
+      if (
+        fetchedAuthorData[url] === undefined ||
+        fetchedAuthorData[url] === null
+      ) {
         return;
       }
       const poems = fetchedAuthorData[url]!;
@@ -210,12 +216,73 @@ function PoemView() {
     setAuthor(clone);
   };
 
+  class AuthorStorage {
+    storageKey(url: PoetryURL, keyType: string) {
+      return `authorData::${url}::${keyType}`;
+    }
+
+    join(strings: string[]): string {
+      return strings.join(",");
+    }
+
+    hasExactAuthors(url: PoetryURL) {
+      const storedAuthorNames = localStorage.getItem(
+        this.storageKey(url, "authorNames")
+      );
+      return storedAuthorNames === this.join(authorNames[url]!);
+    }
+
+    setAuthorNames(url: PoetryURL, authorNames: AuthorName[]): void {
+      localStorage.setItem(
+        this.storageKey(url, "authorNames"),
+        this.join(authorNames)
+      );
+    }
+
+    // sets authorNames[url] when successful
+    setData(
+      url: PoetryURL,
+      data: PoemsByAuthor,
+      authorNames: AuthorName[]
+    ): void {
+      try {
+        localStorage.setItem(
+          this.storageKey(url, "PoemsByAuthor"),
+          compress(JSON.stringify(data))
+        );
+        localStorage.setItem(
+          this.storageKey(url, "TitlesByAuthor"),
+          JSON.stringify(titlesByAuthor[url])
+        );
+        this.setAuthorNames(url, authorNames);
+      } catch (e: any) {
+        toastAlert(`Error setting data for ${url}: ${e}`, "error");
+      }
+    }
+
+    getPoemsByAuthor(url: PoetryURL): PoemsByAuthor {
+      const data = localStorage.getItem(this.storageKey(url, "PoemsByAuthor"));
+      if (data === null) {
+        throw Error(`Local Storage has no poems for ${url}`);
+      }
+      return JSON.parse(decompress(data)!);
+    }
+
+    getTitlesByAuthor(url: PoetryURL): TitlesByAuthor {
+      const data = localStorage.getItem(this.storageKey(url, "TitlesByAuthor"));
+      if (data === null) {
+        throw Error(`Local Storage has no titles for ${url}`);
+      }
+      return JSON.parse(data);
+    }
+  }
+
+  // Only fetch if author names has changed
   useEffect(() => {
     async function fetchPoems(url: PoetryURL) {
       const authorURL = url + "/author";
       let response = await fetch(authorURL);
       const authorJSON = await response.json();
-      const numAuthors = authorNames["current"].length;
       let countAuthors = 0;
 
       authorNames[url] = authorJSON.authors;
@@ -223,10 +290,28 @@ function PoemView() {
         throw `No authors found at ${authorURL}`;
       }
 
-      toastAlert(
-        `Fetching ${authorNames[url]?.length} authors from ${url} ...`,
-        "info"
-      );
+      const authorLocalStorage = new AuthorStorage();
+      if (authorLocalStorage.hasExactAuthors(url)) {
+        toastAlert(
+          `Author list has not changed from ${url}. Using cached data...`,
+          "info"
+        );
+        fetchedAuthorData[url] = authorLocalStorage.getPoemsByAuthor(url)!;
+        titlesByAuthor[url] = authorLocalStorage.getTitlesByAuthor(url)!;
+        return;
+      }
+
+      const numAuthors = authorNames[url]!.length;
+      let fetchMessage = `Fetching ${numAuthors} authors from ${url}`;
+      let severity;
+      if (numAuthors > 50) {
+        fetchMessage += ` (this will take a while) ...`;
+        severity = "warning";
+      } else {
+        fetchMessage += ` ...`;
+        severity = "info";
+      }
+      toastAlert(fetchMessage, severity);
 
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
@@ -251,6 +336,12 @@ function PoemView() {
           inpendNestedKeys(authorInfo, url, authorName, newPoemData);
         }
       }
+
+      authorLocalStorage.setData(
+        url,
+        fetchedAuthorData[url]!,
+        authorNames[url]!
+      );
     }
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
       try {
