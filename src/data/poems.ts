@@ -6,7 +6,7 @@ import {
   TitlesByAuthor,
 } from "src/type-definitions";
 
-const sonnets: PoemsByAuthor = {
+const poems: PoemsByAuthor = {
   "William Shakespeare": [
     {
       title: "Sonnet 60",
@@ -65,7 +65,7 @@ let firstPoemLines: Line[] | undefined;
 let authorNames: AuthorName[] = [];
 let titlesByAuthor: TitlesByAuthor = {};
 
-for (const [sAuthor, sonnetsByAuthor] of Object.entries(sonnets)) {
+for (const [sAuthor, sonnetsByAuthor] of Object.entries(poems)) {
   firstAuthorName = firstAuthorName ?? sAuthor;
   authorNames.push(sAuthor);
   titlesByAuthor[sAuthor] = [];
@@ -85,4 +85,4 @@ export const defaultPoemLines: Line[] = firstPoemLines!;
 export const defaultAuthorNames = authorNames;
 export const defaultTitlesByAuthor = titlesByAuthor;
 
-export default sonnets;
+export default poems;

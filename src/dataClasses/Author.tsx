@@ -8,7 +8,7 @@ import {
   defaultAuthorName,
   defaultAuthorNames,
   defaultTitles,
-} from "../data/sonnets";
+} from "../data/poems";
 import { AuthorName, AuthorData, Title, Stats } from "src/type-definitions";
 
 export default class Author {

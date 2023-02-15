@@ -1,9 +1,9 @@
 import { AuthorName, Line, Title } from "src/type-definitions";
-import sonnets, {
+import poems, {
   defaultAuthorName as dAuthorName,
   defaultTitle as dTitle,
   defaultPoemLines as dLines,
-} from "../data/sonnets";
+} from "../data/poems";
 
 export default class Poem {
   author: AuthorName;

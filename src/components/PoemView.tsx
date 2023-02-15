@@ -27,10 +27,10 @@ import {
 import Author, { defaultAuthor } from "../dataClasses/Author";
 import { defaultParser } from "../dataClasses/Parser";
 import Poem from "../dataClasses/Poem";
-import sonnets, {
+import poems, {
   defaultAuthorNames,
   defaultTitlesByAuthor,
-} from "../data/sonnets";
+} from "../data/poems";
 
 import "./PoemView.css";
 
@@ -59,8 +59,8 @@ type FetchedAuthorDataURL = { [P in PoetryURL]?: PoemsByAuthor };
 type FetchedAuthorData = FetchedAuthorDataSemantic & FetchedAuthorDataURL;
 
 const fetchedAuthorData: FetchedAuthorData = {
-  default: sonnets,
-  current: sonnets,
+  default: poems,
+  current: poems,
 };
 
 type FetchedAuthorNamesSemantic = {
