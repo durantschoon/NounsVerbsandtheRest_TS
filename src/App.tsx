@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Colors from 'material-ui-colors';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -15,19 +16,32 @@ import PoemView from "./components/PoemView";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#807b67",
+      main: "#b6484e", // App.css var(--color-deep-red)
     },
     secondary: {
-      main: "#f8f7f6",
+      main: "#f6e9fc", // App.css var(--color-secondary)
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        colorPrimary: {
+          color: "#f6e9fc", // App.css var(--color-secondary)
+        }
+      }
+    },
     MuiFormControl: {
       styleOverrides: {
-        // Name of the slot
         root: {
-          // Some CSS
           margin: "4px",
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          paddingTop: "0.1rem",
+          paddingLeft: "1.5rem",
         },
       },
     },
