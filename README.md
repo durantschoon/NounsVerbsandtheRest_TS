@@ -2,11 +2,20 @@
 
 # Install
 
-Running `npm install` first by itself seemed to work if I then followed it with parcel as a second command:
+[2024 update]
+## Status
 
-`npm install -D parcel`
+GUI loads, but code breaks because of exceeding quota when requesting data from [poetrydb.org](https://poetrydb.org/)
 
-Because of some weird vite dependencies, I often find I have to install new packages with --force, due to version mismatch warnings.
+## This does seem to work with bun (on an intel mac laptop)
+`bun run serve`
+
+## For node
+Using `nvm use lts/hydrogen`
+
+Because of the vite dependencies, use --force to get past the vite version mismatch warnings.
+
+`npm install -D parcel --force`
 
 # Run
 
