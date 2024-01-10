@@ -8,7 +8,7 @@
 GUI loads, but code could break if you get a `QuotaExceededError` from [poetrydb.org](https://poetrydb.org/). I'd need to do more testing to see what the issue is, but I probably need to add some self-throttling to avoid their new error.
 
 ## Bun works (on an intel mac laptop)
-Wow, this *is* faster.
+⚡ Wow, this *is* faster.
 
 `bun run serve`
 
