@@ -82,11 +82,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.exportedForTesting = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
-// import PropTypes from 'prop-types';
 var react_1 = require("react");
+var lz_string_1 = require("lz-string");
 var R = __importStar(require("ramda"));
-var zod_1 = __importDefault(require("zod"));
 var material_1 = require("@mui/material");
 var useMediaQuery_1 = __importDefault(require("@mui/material/useMediaQuery"));
 var PoemSelector_1 = __importDefault(require("./PoemSelector"));
@@ -95,40 +95,63 @@ var SnackbarAlerts_1 = __importDefault(require("./SnackbarAlerts"));
 var Author_1 = __importStar(require("../dataClasses/Author"));
 var Parser_1 = require("../dataClasses/Parser");
 var Poem_1 = __importDefault(require("../dataClasses/Poem"));
-var sonnets_1 = __importStar(require("../data/sonnets"));
+var poems_1 = __importStar(require("../data/poems"));
 require("./PoemView.css");
 // Order poetry urls "best" to "worst" (highest priority first)
 // Define as an enum so that we can create a types later
-// const PoetryURLs = z.enum([
+// const poetryURLs: PoetryURL[] = [
 //   "http://fetch-should-fail.com",
 //   "http://165.227.95.56:3000",
-// ]);
+// ]
 // debug values
-// const PoetryURLs = z.enum(["https://poetrydb.org", "http://165.227.95.56:3000"]);
-var poetryURLs = ["https://poetrydb.org", "http://165.227.95.56:3000"];
-var zurl = zod_1.default.string().url();
-var fetchedAuthorData = { default: sonnets_1.default, current: sonnets_1.default };
-var authorNames = { default: sonnets_1.defaultAuthorNames, current: sonnets_1.defaultAuthorNames };
-var titlesByAuthorClone = R.clone(sonnets_1.defaultTitlesByAuthor);
+// const poetryURLs: PoetryURL[] = ["https://poetrydb.org", "http://165.227.95.56:3000"]
+var poetryURLs = ["https://poetrydb.org"];
+var fetchedAuthorData = {
+    default: poems_1.default,
+    current: poems_1.default,
+};
+var authorNames = {
+    default: poems_1.defaultAuthorNames,
+    current: poems_1.defaultAuthorNames,
+};
+var titlesByAuthorClone = R.clone(poems_1.defaultTitlesByAuthor);
 var titlesByAuthor = {
     default: titlesByAuthorClone,
     current: titlesByAuthorClone,
 };
+// Think of inpendNestedKeys as hierarchically categorizing everything
+//   after the first arg into the first arg
+// Access key1 of container and either INitialize or apPEND value to key2's list
+function inpendNestedKeys(container, key1, key2, value) {
+    var _a;
+    if (container[key1] === undefined) {
+        container[key1] = (_a = {}, _a[key2] = [value], _a); // initialize1
+    }
+    else {
+        if (container[key1][key2] === undefined) {
+            container[key1][key2] = [value]; // initialize2
+        }
+        else {
+            container[key1][key2].push(value); // append
+        }
+    }
+}
+function getLines(poems, title) {
+    var poem = poems.filter(function (poem) { return poem.title === title; })[0];
+    return poem.lines;
+}
 function PoemView() {
     var _this = this;
-    // TODO: if the parser is on the author, do we need this separate state?
-    var _a = (0, react_1.useState)(Parser_1.defaultParser), parser = _a[0], setParser = _a[1];
-    var _b = (0, react_1.useState)(Author_1.defaultAuthor), author = _b[0], setAuthor = _b[1];
-    var _c = (0, react_1.useState)({
+    var _a = (0, react_1.useState)(Author_1.defaultAuthor), author = _a[0], setAuthor = _a[1];
+    var _b = (0, react_1.useState)({
         open: false,
         severity: "info",
         message: "",
-    }), toast = _c[0], setToast = _c[1];
-    var _d = (0, react_1.useState)({
-        authorName: "",
-        percentage: 0,
-    }), loadingProgress = _d[0], setLoadingProgress = _d[1];
-    var extraLargeScreen = (0, useMediaQuery_1.default)(function (theme) { return theme.breakpoints.up("xl"); });
+    }), toast = _b[0], setToast = _b[1];
+    var parser = Parser_1.defaultParser;
+    var extraLargeScreen = (0, useMediaQuery_1.default)(function (theme) {
+        return theme.breakpoints.up("xl");
+    });
     function setSnackOpen(openOrClosed) {
         setToast(function (prevToast) { return (__assign(__assign({}, prevToast), { open: openOrClosed })); });
     }
@@ -137,13 +160,17 @@ function PoemView() {
     }
     /* setHighestRankFetchedPoem Update the fetched poems to the "best" results
         - sets the value of fetchedPoems 'current' key to the first-most URL of poetryURLs
-        - calls setAuthorData on the latest data
+        - calls setAuthor on the latest data
       */
     function setHighestRankFetchedPoem() {
         for (var _i = 0, poetryURLs_1 = poetryURLs; _i < poetryURLs_1.length; _i++) {
             var url = poetryURLs_1[_i];
-            var poems = fetchedAuthorData[url];
-            if (Object.keys(poems).length > 0) {
+            if (fetchedAuthorData[url] === undefined ||
+                fetchedAuthorData[url] === null) {
+                return;
+            }
+            var poems_2 = fetchedAuthorData[url];
+            if (Object.keys(poems_2).length > 0) {
                 fetchedAuthorData.current = fetchedAuthorData[url];
                 authorNames.current = authorNames[url];
                 titlesByAuthor.current = titlesByAuthor[url];
@@ -156,13 +183,13 @@ function PoemView() {
             // But set it to 0th if we end up with only one poet
             // because some other data has loaded.
             var authorIndex = Math.min(1, authorNames.current.length - 1);
-            var author_1 = authorNames.current[authorIndex];
-            var titles = titlesByAuthor.current[author_1];
+            var authorName = authorNames.current[authorIndex];
+            var titles = titlesByAuthor.current[authorName];
             var title = titles[0];
-            var lines = fetchedAuthorData.current.currentPoem.lines;
-            var currentPoem = new Poem_1.default(author_1, title, lines);
+            var lines = getLines(fetchedAuthorData.current[authorName], title);
+            var currentPoem = new Poem_1.default(authorName, title, lines);
             setAuthor(new Author_1.default({
-                name: author_1,
+                name: authorName,
                 titles: titles,
                 authorNames: authorNames.current,
                 currentPoem: currentPoem,
@@ -170,7 +197,7 @@ function PoemView() {
             }));
         }
     }
-    /* Updating:
+    /* Updating Author (and Poem) state:
         - Chain together any number of functions that will modify the authorData
           and pass those into authorUpdater
         - Clones current authorData
@@ -178,7 +205,7 @@ function PoemView() {
         - Finally, sets the new author state to the modified clone
       */
     var authorUpdater = function (func, args) {
-        var clone = R.clone(author); // deep copy for modification and resetting    
+        var clone = R.clone(author); // deep copy for modification and resetting
         func.apply(void 0, __spreadArray([clone], (args !== null && args !== void 0 ? args : []), false));
         setAuthor(clone);
     };
@@ -186,90 +213,160 @@ function PoemView() {
         func(clone, line, word);
         setAuthor(clone);
     };
-    // Initial useEffect hook tries to fetch poems from URLs
+    var AuthorStorage = /** @class */ (function () {
+        function AuthorStorage() {
+        }
+        Object.defineProperty(AuthorStorage.prototype, "storageKey", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url, keyType) {
+                return "authorData::".concat(url, "::").concat(keyType);
+            }
+        });
+        Object.defineProperty(AuthorStorage.prototype, "join", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (strings) {
+                return strings.join(",");
+            }
+        });
+        Object.defineProperty(AuthorStorage.prototype, "hasExactAuthors", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url) {
+                var storedAuthorNames = localStorage.getItem(this.storageKey(url, "authorNames"));
+                return storedAuthorNames === this.join(authorNames[url]);
+            }
+        });
+        Object.defineProperty(AuthorStorage.prototype, "setAuthorNames", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url, authorNames) {
+                localStorage.setItem(this.storageKey(url, "authorNames"), this.join(authorNames));
+            }
+        });
+        // sets authorNames[url] when successful
+        Object.defineProperty(AuthorStorage.prototype, "setData", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url, data, authorNames) {
+                try {
+                    localStorage.setItem(this.storageKey(url, "PoemsByAuthor"), (0, lz_string_1.compress)(JSON.stringify(data)));
+                    localStorage.setItem(this.storageKey(url, "TitlesByAuthor"), JSON.stringify(titlesByAuthor[url]));
+                    this.setAuthorNames(url, authorNames);
+                }
+                catch (e) {
+                    toastAlert("Error setting data for ".concat(url, ": ").concat(e), "error");
+                }
+            }
+        });
+        Object.defineProperty(AuthorStorage.prototype, "getPoemsByAuthor", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url) {
+                var data = localStorage.getItem(this.storageKey(url, "PoemsByAuthor"));
+                if (data === null) {
+                    throw Error("Local Storage has no poems for ".concat(url));
+                }
+                return JSON.parse((0, lz_string_1.decompress)(data));
+            }
+        });
+        Object.defineProperty(AuthorStorage.prototype, "getTitlesByAuthor", {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function (url) {
+                var data = localStorage.getItem(this.storageKey(url, "TitlesByAuthor"));
+                if (data === null) {
+                    throw Error("Local Storage has no titles for ".concat(url));
+                }
+                return JSON.parse(data);
+            }
+        });
+        return AuthorStorage;
+    }());
+    // Only fetch if author names has changed
     (0, react_1.useEffect)(function () {
         function fetchPoems(url) {
             var _a;
             return __awaiter(this, void 0, void 0, function () {
-                var authorURL, response, authorJSON, numAuthors, countAuthors, _loop_1, _i, _b, authorName;
-                return __generator(this, function (_c) {
-                    switch (_c.label) {
+                var authorURL, response, authorJSON, countAuthors, authorLocalStorage, numAuthors, fetchMessage, severity, _i, _b, authorName, poemsByAuthorURL, fetchedPoemsInitial, titleInfo, authorInfo, _c, _d, poem, newPoemData;
+                return __generator(this, function (_e) {
+                    switch (_e.label) {
                         case 0:
                             authorURL = url + "/author";
                             return [4 /*yield*/, fetch(authorURL)];
                         case 1:
-                            response = _c.sent();
+                            response = _e.sent();
                             return [4 /*yield*/, response.json()];
                         case 2:
-                            authorJSON = _c.sent();
-                            numAuthors = authorNames.current.length;
+                            authorJSON = _e.sent();
                             countAuthors = 0;
                             authorNames[url] = authorJSON.authors;
                             if (((_a = authorNames[url]) === null || _a === void 0 ? void 0 : _a.length) === 0) {
                                 throw "No authors found at ".concat(authorURL);
                             }
-                            _loop_1 = function (authorName) {
-                                var poemsByAuthorURL, fetchedPoemsInitial;
-                                var _d, _e;
-                                return __generator(this, function (_f) {
-                                    switch (_f.label) {
-                                        case 0:
-                                            poemsByAuthorURL = "".concat(url, "/author/").concat(encodeURIComponent(authorName.trim()));
-                                            setLoadingProgress({
-                                                authorName: authorName,
-                                                percentage: 100 * (++countAuthors / numAuthors),
-                                            });
-                                            return [4 /*yield*/, fetch(poemsByAuthorURL)];
-                                        case 1:
-                                            response = _f.sent();
-                                            return [4 /*yield*/, response.json()];
-                                        case 2:
-                                            fetchedPoemsInitial = _f.sent();
-                                            if (titlesByAuthor[url]) {
-                                                titlesByAuthor[url][authorName] = [];
-                                            }
-                                            else {
-                                                titlesByAuthor[url] = (_d = {}, _d[authorName] = [], _d);
-                                            }
-                                            if (fetchedAuthorData[url]) {
-                                                fetchedAuthorData[url][authorName] = {};
-                                            }
-                                            else {
-                                                fetchedAuthorData[url] = (_e = {}, _e[authorName] = {}, _e);
-                                            }
-                                            // for (let poem of fetchedPoemsInitial) {
-                                            //   titlesByAuthor[url]![authorName].push(poem.title);
-                                            //   fetchedAuthorData[url]?[authorName][poem.title] = poem.lines;
-                                            // }
-                                            // try forEach here
-                                            // TODO: resolve Poem vs PoemData
-                                            fetchedPoemsInitial.forEach(function (poem) {
-                                                titlesByAuthor[url][authorName].push(poem.title);
-                                                fetchedAuthorData[url] ? [authorName][poem.title] = poem.lines : ;
-                                            });
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            };
+                            authorLocalStorage = new AuthorStorage();
+                            if (authorLocalStorage.hasExactAuthors(url)) {
+                                toastAlert("Author list has not changed from ".concat(url, ". Using cached data..."), "info");
+                                fetchedAuthorData[url] = authorLocalStorage.getPoemsByAuthor(url);
+                                titlesByAuthor[url] = authorLocalStorage.getTitlesByAuthor(url);
+                                return [2 /*return*/];
+                            }
+                            numAuthors = authorNames[url].length;
+                            fetchMessage = "Fetching ".concat(numAuthors, " authors from ").concat(url);
+                            if (numAuthors > 50) {
+                                fetchMessage += " (this will take a while) ...";
+                                severity = "warning";
+                            }
+                            else {
+                                fetchMessage += " ...";
+                                severity = "info";
+                            }
+                            toastAlert(fetchMessage, severity);
                             _i = 0, _b = authorNames[url];
-                            _c.label = 3;
+                            _e.label = 3;
                         case 3:
-                            if (!(_i < _b.length)) return [3 /*break*/, 6];
+                            if (!(_i < _b.length)) return [3 /*break*/, 7];
                             authorName = _b[_i];
-                            return [5 /*yield**/, _loop_1(authorName)];
+                            poemsByAuthorURL = "".concat(url, "/author/").concat(encodeURIComponent(authorName.trim()));
+                            return [4 /*yield*/, fetch(poemsByAuthorURL)];
                         case 4:
-                            _c.sent();
-                            _c.label = 5;
+                            response = _e.sent();
+                            return [4 /*yield*/, response.json()];
                         case 5:
+                            fetchedPoemsInitial = _e.sent();
+                            titlesByAuthor.current[authorName] = []; // reset titlesByAuthor
+                            titleInfo = titlesByAuthor;
+                            authorInfo = fetchedAuthorData;
+                            for (_c = 0, _d = fetchedPoemsInitial; _c < _d.length; _c++) {
+                                poem = _d[_c];
+                                inpendNestedKeys(titleInfo, url, authorName, poem.title);
+                                newPoemData = {
+                                    title: poem.title,
+                                    lines: poem.lines,
+                                };
+                                inpendNestedKeys(authorInfo, url, authorName, newPoemData);
+                            }
+                            _e.label = 6;
+                        case 6:
                             _i++;
                             return [3 /*break*/, 3];
-                        case 6: return [2 /*return*/];
+                        case 7:
+                            authorLocalStorage.setData(url, fetchedAuthorData[url], authorNames[url]);
+                            return [2 /*return*/];
                     }
                 });
             });
         }
         var fetchedPromises = poetryURLs.map(function (url) { return __awaiter(_this, void 0, void 0, function () {
-            var error_1;
+            var error_1, msg;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -278,7 +375,8 @@ function PoemView() {
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_1 = _a.sent();
-                        return [2 /*return*/, toastAlert("".concat(error_1.message, ": ").concat(url), "warning")];
+                        msg = "message" in error_1 ? error_1.message : "Unknown error";
+                        return [2 /*return*/, toastAlert("".concat(msg, ": ").concat(url), "error")];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -289,26 +387,34 @@ function PoemView() {
     (0, react_1.useEffect)(function () {
         var authorName = author.name;
         var title = author.stagedTitleChange;
-        var newLines = fetchedAuthorData.current[authorName][title];
-        authorUpdater(function (aDataClone) {
-            aDataClone.setPoem(new Poem_1.default(authorName, title, newLines));
+        if (fetchedAuthorData.current[authorName] === undefined) {
+            return; // not ready yet
+        }
+        var newLines = getLines(fetchedAuthorData.current[authorName], title);
+        authorUpdater(function (clone) {
+            clone.setPoem(new Poem_1.default(authorName, title, newLines));
         });
     }, [author.stagedTitleChange]);
     // When the author name changes, set the current title to the first one fetched
     (0, react_1.useEffect)(function () {
         var _a, _b;
         var authorName = author.name;
+        if (fetchedAuthorData.current[authorName] === undefined) {
+            return; // not ready yet
+        }
         var newTitle = (_b = (_a = titlesByAuthor.current) === null || _a === void 0 ? void 0 : _a[authorName]) === null || _b === void 0 ? void 0 : _b[0];
-        // needed?
-        // if (!fetchedPoems?.["current"]?.[authorName]?.[newTitle]) return;
-        var newLines = fetchedAuthorData.current[authorName][newTitle];
-        authorUpdater(function (authorClone) {
-            // update the possible titles, so the selector will populate before the
-            // poem resets
-            authorClone.titles = titlesByAuthor.current[authorClone.name];
-            authorClone.setPoem(new Poem_1.default(authorName, newTitle, newLines));
+        var newLines = getLines(fetchedAuthorData.current[authorName], newTitle);
+        authorUpdater(function (clone) {
+            // It is important to update the possible titles first,
+            // so the selector will populate before the poem resets
+            clone.titles = titlesByAuthor.current[clone.name];
+            clone.setPoem(new Poem_1.default(authorName, newTitle, newLines));
         });
     }, [author.name]);
-    return ((0, jsx_runtime_1.jsxs)("section", { children: [(0, jsx_runtime_1.jsxs)(material_1.Grid, __assign({ container: true, spacing: 2, direction: extraLargeScreen ? "row" : "column" }, { children: [(0, jsx_runtime_1.jsx)(material_1.Grid, __assign({ item: true, xs: 6 }, { children: (author === null || author === void 0 ? void 0 : author.currentPoem) && ((0, jsx_runtime_1.jsx)(PoemSelector_1.default, __assign({}, { author: author, authorUpdater: authorUpdater, loadingProgress: loadingProgress }))) })), (0, jsx_runtime_1.jsx)(material_1.Grid, __assign({ item: true, xs: 6 }, { children: (0, jsx_runtime_1.jsx)(ParserChallenger_1.default, __assign({}, { author: author, authorUpdater: authorUpdater, authorApplyWordFunc: authorApplyWordFunc, parser: parser })) }))] })), (0, jsx_runtime_1.jsx)(SnackbarAlerts_1.default, __assign({}, __assign(__assign({}, toast), { setSnackOpen: setSnackOpen })))] }));
+    return ((0, jsx_runtime_1.jsxs)("section", { children: [(0, jsx_runtime_1.jsxs)(material_1.Grid, { container: true, spacing: 2, direction: extraLargeScreen ? "row" : "column", children: [(0, jsx_runtime_1.jsx)(material_1.Grid, { item: true, xs: 6, children: (author === null || author === void 0 ? void 0 : author.currentPoem) && ((0, jsx_runtime_1.jsx)(PoemSelector_1.default, { author: author, authorUpdater: authorUpdater })) }), (0, jsx_runtime_1.jsx)(material_1.Grid, { item: true, xs: 6, children: (0, jsx_runtime_1.jsx)(ParserChallenger_1.default, { author: author, authorUpdater: authorUpdater, authorApplyWordFunc: authorApplyWordFunc }) })] }), (0, jsx_runtime_1.jsx)(SnackbarAlerts_1.default, __assign({}, toast, { setSnackOpen: setSnackOpen }))] }));
 }
 exports.default = PoemView;
+exports.exportedForTesting = {
+    inpendNestedKeys: inpendNestedKeys,
+    getLines: getLines,
+};

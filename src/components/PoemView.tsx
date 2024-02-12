@@ -102,7 +102,7 @@ function inpendNestedKeys(
   container: NestedContainer,
   key1: string,
   key2: string,
-  value: any
+  value: any,
 ) {
   if (container[key1] === undefined) {
     container[key1] = { [key2]: [value] }; // initialize1
@@ -117,7 +117,7 @@ function inpendNestedKeys(
 
 function getLines(poems: PoemData[], title: string): Line[] {
   const poem: PoemData = poems.filter(
-    (poem: PoemData) => poem.title === title
+    (poem: PoemData) => poem.title === title,
   )[0];
   return poem.lines;
 }
@@ -133,7 +133,7 @@ function PoemView() {
   const parser = defaultParser;
 
   const extraLargeScreen = useMediaQuery<Theme>((theme: Theme) =>
-    theme.breakpoints.up("xl")
+    theme.breakpoints.up("xl"),
   );
 
   function setSnackOpen(openOrClosed: boolean) {
@@ -185,7 +185,7 @@ function PoemView() {
           authorNames: authorNames.current,
           currentPoem,
           currentParser: parser,
-        })
+        }),
       );
     }
   }
@@ -199,7 +199,7 @@ function PoemView() {
     */
   const authorUpdater: AuthorUpdatorType = (
     func: AuthorCloneUpdatorType,
-    args?: any[]
+    args?: any[],
   ) => {
     var clone = R.clone(author); // deep copy for modification and resetting
     func(clone, ...(args ?? []));
@@ -210,7 +210,7 @@ function PoemView() {
     clone: AuthorClone,
     func: AuthorCloneUpdatorWithWordType,
     line: number,
-    word: number
+    word: number,
   ) => {
     func(clone, line, word);
     setAuthor(clone);
@@ -227,7 +227,7 @@ function PoemView() {
 
     hasExactAuthors(url: PoetryURL) {
       const storedAuthorNames = localStorage.getItem(
-        this.storageKey(url, "authorNames")
+        this.storageKey(url, "authorNames"),
       );
       return storedAuthorNames === this.join(authorNames[url]!);
     }
@@ -235,7 +235,7 @@ function PoemView() {
     setAuthorNames(url: PoetryURL, authorNames: AuthorName[]): void {
       localStorage.setItem(
         this.storageKey(url, "authorNames"),
-        this.join(authorNames)
+        this.join(authorNames),
       );
     }
 
@@ -243,16 +243,16 @@ function PoemView() {
     setData(
       url: PoetryURL,
       data: PoemsByAuthor,
-      authorNames: AuthorName[]
+      authorNames: AuthorName[],
     ): void {
       try {
         localStorage.setItem(
           this.storageKey(url, "PoemsByAuthor"),
-          compress(JSON.stringify(data))
+          compress(JSON.stringify(data)),
         );
         localStorage.setItem(
           this.storageKey(url, "TitlesByAuthor"),
-          JSON.stringify(titlesByAuthor[url])
+          JSON.stringify(titlesByAuthor[url]),
         );
         this.setAuthorNames(url, authorNames);
       } catch (e: any) {
@@ -294,7 +294,7 @@ function PoemView() {
       if (authorLocalStorage.hasExactAuthors(url)) {
         toastAlert(
           `Author list has not changed from ${url}. Using cached data...`,
-          "info"
+          "info",
         );
         fetchedAuthorData[url] = authorLocalStorage.getPoemsByAuthor(url)!;
         titlesByAuthor[url] = authorLocalStorage.getTitlesByAuthor(url)!;
@@ -316,7 +316,7 @@ function PoemView() {
       // fetch all the new poems before triggering an author / title change
       for (let authorName of authorNames[url]!) {
         let poemsByAuthorURL = `${url}/author/${encodeURIComponent(
-          authorName.trim()
+          authorName.trim(),
         )}`;
 
         response = await fetch(poemsByAuthorURL);
@@ -340,7 +340,7 @@ function PoemView() {
       authorLocalStorage.setData(
         url,
         fetchedAuthorData[url]!,
-        authorNames[url]!
+        authorNames[url]!,
       );
     }
     const fetchedPromises = poetryURLs.map(async (url: PoetryURL) => {
@@ -364,7 +364,7 @@ function PoemView() {
     }
     const newLines: Line[] = getLines(
       fetchedAuthorData.current[authorName],
-      title
+      title,
     );
 
     authorUpdater((clone: AuthorClone) => {
@@ -413,3 +413,8 @@ function PoemView() {
 }
 
 export default PoemView;
+
+export const exportedForTesting = {
+  inpendNestedKeys,
+  getLines,
+};

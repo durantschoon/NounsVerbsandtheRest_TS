@@ -6,6 +6,10 @@ launch.json
 # dependencies
 node_modules
 
+# ts
+.cache/
+/**/*.js
+
 # parcel
 *.mdb
 .parcel-cache/
